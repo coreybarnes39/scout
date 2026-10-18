@@ -43,9 +43,8 @@ jobs:
           PROFILE: ${{ inputs.profile }}
           DEBUG: ${{ inputs.debug }}
           DRY_RUN: ${{ inputs.dry_run }}
-        run: |
-          args=()
-          if [[ -n "$PROFILE" ]]; then args+=(--profile "$PROFILE"); fi
-          if [[ "$DEBUG" == "true" ]]; then args+=(--debug); fi
-          if [[ "$DRY_RUN" == "true" ]]; then args+=(--dry-run); fi
-          python -m scout.main "${args[@]}"
+      run: |
+        python -m scout.main \
+          --profile "$PROFILE" \
+          $([[ "$DEBUG" == "true" ]] && echo "--debug") \
+          $([[ "$DRY_RUN" == "true" ]] && echo "--dry-run")
