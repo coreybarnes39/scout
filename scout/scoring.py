@@ -32,4 +32,13 @@ def score(item, profile):
     weights = profile.get('weights', {})
     total = sum(max(0, v) for v in weights.values()) or 1
     points = sum(max(0, w) for k, w in weights.items() if signals.get(k))
-    return round(100 * points / total), signals
+    base_score = round(100 * points / total)
+    penalty_config = profile.get("price_penalty", {})
+    threshold = penalty_config.get("starts_above")
+    if threshold is not None and price > threshold:
+        import math
+        step = max(1, penalty_config.get("points_per_500", 0))
+        penalty = min(penalty_config.get("max_points", 10),
+                      math.ceil((price - threshold) / 500) * step)
+        base_score = max(0, base_score - penalty)
+    return base_score, signals

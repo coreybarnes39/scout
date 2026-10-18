@@ -69,3 +69,20 @@ Copy `profiles/gifts.example.yaml` to `profiles/dad_gifts.yaml`, set `enabled: t
 - No secret files should be committed to GitHub.
 - Price-drop alerts compare the current price to the previous successful observation of that listing; listings reappearing after an absence retain history.
 - Treat scoring as shortlist triage. Confirm size, drivetrain, battery type, rack mounting and price on the seller's page.
+
+
+## Cycling update: Contender source and $5,000 ceiling
+
+The cycling profile now includes a **candidate** Shopify collection endpoint for
+Contender Bicycles. Its public availability has **not been verified**. If the
+source blocks requests or is not a valid product feed, the workflow will log
+`Source Contender Bicycles failed: ...` and continue, possibly with zero results.
+A green GitHub Actions run does not guarantee that the source worked.
+
+The hard price ceiling is $5,000. Bikes above $4,000 incur a 5-point penalty
+per started $500 band, capped at 10 points. Product text signals are heuristic;
+size and technical specifications require manual verification.
+
+To apply this update to an existing repository, replace `profiles/cycling.yaml`
+and `scout/scoring.py`, and optionally replace `tests/test_scoring.py`.
+Run `python -m pytest -q` before a manual workflow dispatch.

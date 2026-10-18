@@ -1,9 +1,13 @@
 name: cycling
 enabled: true
 category: cycling
-sources: [] # Add a tested Shopify or RSS source (see README)
+sources:
+  - name: Contender Bicycles
+    type: shopify
+    url: https://contenderbicycles.com/collections/bikes/products.json?limit=250
+    # Public feed availability has not been independently verified.
 filters:
-  max_price: 4000
+  max_price: 5000
   min_price: 300
   required_any: [gravel, all-road, checkpoint, diverge, crux, terra, urs, revolt, topstone, aspero, grizl, grail]
   excluded_any: [kids, youth, frameset, frame only]
@@ -15,6 +19,10 @@ weights:
   bikepacking: 15
   endurance: 10
   road_compatible: 5
+price_penalty:
+  starts_above: 4000
+  points_per_500: 5
+  max_points: 10
 alerts:
   min_score: 65
   price_drop_pct: 10
