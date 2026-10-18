@@ -1,15 +1,11 @@
 name: cycling
 enabled: true
 category: cycling
-sources:
-  - name: Contender Bicycles
-    type: shopify
-    url: https://contenderbicycles.com/collections/bikes/products.json?limit=250
-    # Public feed availability has not been independently verified.
+sources: [contender]
 filters:
   max_price: 5000
   min_price: 300
-  required_any: [gravel, all-road, checkpoint, diverge, crux, terra, urs, revolt, topstone, aspero, grizl, grail]
+  required_any: [gravel, all-road, checkpoint, diverge, crux, terra, urs, revolt, topstone, aspero, grizl, grail, grevil, kaius, stigmata, addict gravel, lauf, r5 cx]
   excluded_any: [kids, youth, frameset, frame only]
 weights:
   carbon: 15

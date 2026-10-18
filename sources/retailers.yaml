@@ -1,0 +1,7 @@
+# Shared source registry. Profiles reference IDs, not URLs.
+contender:
+  name: Contender Bicycles
+  type: shopify
+  base_url: https://contenderbicycles.com
+  collection: bikes
+  max_pages: 1 # Increase after confirming results; Sheets writes one row per variant

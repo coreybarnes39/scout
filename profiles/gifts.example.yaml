@@ -1,0 +1,15 @@
+name: dad_gifts
+enabled: false
+category: generic
+sources: []
+filters:
+  max_price: 150
+  required_any: []
+  excluded_any: []
+weights:
+  matching_keywords: 70
+  discounted: 30
+keywords: [] # e.g. [woodworking, gardening]
+alerts:
+  min_score: 60
+  price_drop_pct: 15

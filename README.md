@@ -86,3 +86,22 @@ size and technical specifications require manual verification.
 To apply this update to an existing repository, replace `profiles/cycling.yaml`
 and `scout/scoring.py`, and optionally replace `tests/test_scoring.py`.
 Run `python -m pytest -q` before a manual workflow dispatch.
+
+
+## v0.3: Reusable sources and diagnostics
+
+`profiles/*.yaml` reference source IDs; retailer endpoints live in `sources/retailers.yaml`.
+Add new Shopify retailers to the registry and reference their IDs from any profile.
+For a different category (e.g. gifts), create a new profile with its own filters and weights.
+
+Run locally with `python -m scout.main --profile cycling --dry-run --debug`.
+The workflow supports manual `debug` and `dry_run` inputs. A dry run does not write to Sheets.
+All relevant products passing hard filters are stored; only those above the alert threshold trigger email.
+
+**Known limitations:** This first version uses Shopify public feeds and RSS, not
+a general web search API. It cannot guarantee that a particular variant is a
+correct fit, and bike specification text may be incomplete. The score is a
+heuristic, not verified manufacturer data. The Sheets writer performs one
+update per variant, so start with `max_pages: 1` and monitor Google API quotas.
+The existing Listings sheet is a latest-seen snapshot, not a transaction-level
+price history; previous_price records only the immediately preceding price.

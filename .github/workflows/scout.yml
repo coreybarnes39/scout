@@ -1,0 +1,51 @@
+name: Scout Daily
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: 'Profile name (blank = all enabled)'
+        required: false
+        type: string
+      debug:
+        description: 'Verbose source/filter logging'
+        required: false
+        type: boolean
+        default: true
+      dry_run:
+        description: 'Do not write to Google Sheets'
+        required: false
+        type: boolean
+        default: false
+  schedule:
+    - cron: '17 12 * * *'
+permissions:
+  contents: read
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+      - name: Run Scout
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          ALERT_TO: ${{ secrets.ALERT_TO }}
+          PROFILE: ${{ inputs.profile }}
+          DEBUG: ${{ inputs.debug }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          args=()
+          if [[ -n "$PROFILE" ]]; then args+=(--profile "$PROFILE"); fi
+          if [[ "$DEBUG" == "true" ]]; then args+=(--debug); fi
+          if [[ "$DRY_RUN" == "true" ]]; then args+=(--dry-run); fi
+          python -m scout.main "${args[@]}"
