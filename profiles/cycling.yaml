@@ -1,0 +1,20 @@
+name: cycling
+enabled: true
+category: cycling
+sources: [] # Add a tested Shopify or RSS source (see README)
+filters:
+  max_price: 4000
+  min_price: 300
+  required_any: [gravel, all-road, checkpoint, diverge, crux, terra, urs, revolt, topstone, aspero, grizl, grail]
+  excluded_any: [kids, youth, frameset, frame only]
+weights:
+  carbon: 15
+  size: 15
+  electronic: 25
+  removable_battery: 15
+  bikepacking: 15
+  endurance: 10
+  road_compatible: 5
+alerts:
+  min_score: 65
+  price_drop_pct: 10
