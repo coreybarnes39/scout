@@ -5,6 +5,30 @@ from html import unescape
 def normalize(s):
     return re.sub(r'<[^>]+>', ' ', unescape(str(s or ''))).lower()
 
+def drivetrain(text):
+    """Detect drivetrain on the specific listing; no inference from brand/model alone."""
+    if re.search(r'\b(?:sram\s+)?(?:rival|force|red|apex)?\s*axs\b|\betap\b', text):
+        return 'SRAM AXS'
+    if re.search(r'\bdi2\b', text):
+        return 'Shimano Di2'
+    if re.search(r'\b(?:eps|super record wireless)\b', text):
+        return 'Other electronic'
+    return 'Unverified'
+
+def variant_size(item):
+    """Return an explicit size when the variant identifies one, otherwise None."""
+    variant = normalize(item.get('variant_title', ''))
+    if not variant or variant == 'default title':
+        return None
+    match = re.search(r'(?<!\d)(?:4[4-9]|5[0-9]|6[0-2])\s*(?:cm)?(?!\d)', variant)
+    if match:
+        return str(int(re.match(r'\d+', match.group()).group()))
+    # Match isolated sizes, not arbitrary letters inside a color name.
+    match = re.search(r'(?<![a-z])(?:xxs|xs|xxl|xl|small|medium|large|s|m|l)(?![a-z])', variant)
+    if match:
+        return {'small': 'S', 'medium': 'M', 'large': 'L'}.get(match.group(), match.group().upper())
+    return None
+
 def rejection_reason(item, profile):
     text = normalize(item['title'] + ' ' + item.get('description', ''))
     filters = profile.get('filters', {})
@@ -15,6 +39,23 @@ def rejection_reason(item, profile):
     if price < filters.get('min_price', 0): return 'under_minimum'
     if any(word.lower() in normalize(item['title']) for word in filters.get('excluded_any', [])): return 'excluded_keyword'
     if filters.get('required_any') and not any(word.lower() in text for word in filters['required_any']): return 'not_relevant'
+    if profile.get('category') == 'cycling':
+        electronic = filters.get('electronic_shifting', {})
+        if electronic.get('required') and drivetrain(text) == 'Unverified':
+            return 'electronic_unverified'
+        size_filter = filters.get('frame_sizes', {})
+        if isinstance(size_filter, dict) and size_filter.get('required'):
+            size = variant_size(item)
+            accepted = {str(x).upper() for x in size_filter.get('accepted', [])}
+            if size is not None and size.upper() not in accepted:
+                return 'wrong_size'
+            if size is None and not size_filter.get('include_unknown', True):
+                return 'size_unverified'
+        # HSA status must be verified independently. No retailer listing is
+        # considered verified solely because it mentions HSA/FSA.
+        hsa = filters.get('hsa', {})
+        if hsa.get('required') and not hsa.get('include_unverified', True):
+            return 'hsa_unverified'
     return None
 
 def score(item, profile):
@@ -23,16 +64,21 @@ def score(item, profile):
     price = item.get('price')
     if rejection_reason(item, profile): return None
     if profile.get('category') == 'cycling':
-        # Size is NOT a hard filter: ambiguous size descriptions need manual verification.
+        drive = drivetrain(text)
+        size = variant_size(item)
+        accepted = {str(x).upper() for x in filters.get('frame_sizes', {}).get('accepted', ['52', '53', '54', 'S', 'M'])}
         signals = {
             'carbon': any(x in text for x in ['carbon', 'cf ', 'cfr ', 'sl 5', 'sl 6']),
-            'size': bool(re.search(r'\b(52|53|54)\s*(cm)?\b|\bsize\s*m\b|\bmedium\b', normalize(item.get('variant_title') or item['title']))),
-            'electronic': any(x in text for x in ['axs', 'di2', 'electronic shifting', 'etap']),
-            'removable_battery': any(x in text for x in ['rival axs', 'force axs', 'red axs', 'sram axs']),
+            'size': size is not None and size.upper() in accepted,
+            'electronic': drive != 'Unverified',
+            'removable_battery': drive == 'SRAM AXS',
             'bikepacking': any(x in text for x in ['rack mount', 'fork mount', 'cargo mount', 'bikepacking', 'mounting points']),
             'endurance': any(x in text for x in ['endurance', 'relaxed geometry', 'upright']),
             'road_compatible': any(x in text for x in ['700c', 'road tire', 'road wheel']),
         }
+        item['drivetrain'] = drive
+        item['frame_size'] = size or 'Unverified'
+        item['hsa_status'] = 'Unverified'
     else:
         keywords = profile.get('keywords', [])
         signals = {'matching_keywords': any(k.lower() in text for k in keywords),
@@ -41,12 +87,12 @@ def score(item, profile):
     total = sum(max(0, v) for v in weights.values()) or 1
     points = sum(max(0, w) for k, w in weights.items() if signals.get(k))
     base_score = round(100 * points / total)
-    penalty_config = profile.get("price_penalty", {})
-    threshold = penalty_config.get("starts_above")
+    penalty_config = profile.get('price_penalty', {})
+    threshold = penalty_config.get('starts_above')
     if threshold is not None and price > threshold:
         import math
-        step = max(1, penalty_config.get("points_per_500", 0))
-        penalty = min(penalty_config.get("max_points", 10),
+        step = max(1, penalty_config.get('points_per_500', 0))
+        penalty = min(penalty_config.get('max_points', 10),
                       math.ceil((price - threshold) / 500) * step)
         base_score = max(0, base_score - penalty)
     return base_score, signals

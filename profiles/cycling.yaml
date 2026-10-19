@@ -4,9 +4,20 @@ category: cycling
 sources: [contender]
 filters:
   max_price: 5000
+  preferred_max_price: 4000
   min_price: 300
   required_any: [gravel, all-road, checkpoint, diverge, crux, terra, urs, revolt, topstone, aspero, grizl, grail, grevil, kaius, stigmata, addict gravel, lauf, r5 cx]
   excluded_any: [kids, youth, frameset, frame only]
+  frame_sizes:
+    required: true
+    accepted: [52, 53, 54, S, M]
+    include_unknown: true
+  electronic_shifting:
+    required: true
+    preferred: sram_axs
+  hsa:
+    required: false
+    include_unverified: true
 weights:
   carbon: 15
   size: 15
@@ -19,6 +30,9 @@ price_penalty:
   starts_above: 4000
   points_per_500: 5
   max_points: 10
+results:
+  top_n: 10
+  deduplicate_models: true
 alerts:
   min_score: 65
   price_drop_pct: 10

@@ -9,7 +9,7 @@ from email.message import EmailMessage
 import yaml
 from .connectors import collect
 from .scoring import score, rejection_reason
-from .storage import open_sheet, save
+from .storage import open_sheet, save, write_top_results
 
 def send_email(alerts):
     if not alerts or not all(os.getenv(k) for k in ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASSWORD', 'ALERT_TO']): return
@@ -69,6 +69,12 @@ def run(profile_filter=None, dry_run=False, debug=False):
         if dry_run:
             continue
         alerts = save(sheet, profile['name'], items, profile.get('alerts', {}).get('price_drop_pct', 10))
+        results_config = profile.get('results', {})
+        if results_config.get('top_n'):
+            selected = write_top_results(sheet, profile['name'], items,
+                                         top_n=int(results_config['top_n']),
+                                         deduplicate=results_config.get('deduplicate_models', True))
+            print(f"[SCOUT] Updated Top 10 tab: {len(selected)} distinct bikes")
         send_email([a for a in alerts if a['score'] >= threshold])
 
 if __name__ == '__main__':
