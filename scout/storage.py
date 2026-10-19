@@ -64,3 +64,46 @@ def save(sheet, profile, listings, price_drop_pct):
                           value_input_option='RAW')
 
     return alerts
+
+TOP_HEADERS = ['rank', 'profile', 'bike', 'size', 'price', 'score', 'drivetrain',
+               'hsa_status', 'why_it_ranked', 'retailer', 'link', 'updated_at']
+
+
+def write_top_results(sheet, profile, listings, top_n=10, deduplicate=True):
+    """Replace the human-facing shortlist; keep Listings as the historical store."""
+    from urllib.parse import urlsplit
+    ranked = sorted(listings, key=lambda item: (
+        -item['score'], item['price'], item['title']))
+    selected = []
+    seen = set()
+    for item in ranked:
+        # Shopify color/size variants share a product URL without ?variant=.
+        model_key = urlsplit(item['url'])._replace(query='', fragment='').geturl()
+        if deduplicate and model_key in seen:
+            continue
+        seen.add(model_key)
+        selected.append(item)
+        if len(selected) >= top_n:
+            break
+
+    doc = sheet.spreadsheet
+    tab_name = 'Top 10' if profile == 'cycling' else f'Top {top_n} {profile}'[:100]
+    try:
+        tab = doc.worksheet(tab_name)
+    except gspread.WorksheetNotFound:
+        tab = doc.add_worksheet(title=tab_name, rows=max(30, top_n + 1),
+                                cols=len(TOP_HEADERS))
+    now = datetime.now(timezone.utc).isoformat(timespec='seconds')
+    rows = [TOP_HEADERS]
+    for rank, item in enumerate(selected, 1):
+        signals = item.get('signals', {})
+        why = ', '.join(key.replace('_', ' ') for key, matched in signals.items()
+                        if matched) or 'Needs manual review'
+        rows.append([rank, profile, item['title'], item.get('frame_size', 'Unverified'),
+                     item['price'], item['score'], item.get('drivetrain', 'Unverified'),
+                     item.get('hsa_status', 'Unverified'), why, item['source'],
+                     item['url'], now])
+    # Clear stale rows when fewer bikes qualify on the next run.
+    tab.clear()
+    tab.update(range_name=f'A1:L{len(rows)}', values=rows, value_input_option='RAW')
+    return selected
