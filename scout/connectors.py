@@ -90,6 +90,16 @@ def _structured_products(source):
                 self.scripts.append(''.join(self.parts))
                 self.inside = False
 
+    class Links(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.hrefs = []
+        def handle_starttag(self, tag, attrs):
+            if tag == 'a':
+                href = dict(attrs).get('href')
+                if href:
+                    self.hrefs.append(href)
+
     base = source['base_url'].rstrip('/')
     if urlparse(base).scheme != 'https':
         raise ValueError('Only HTTPS sources supported')
@@ -138,8 +148,36 @@ def _structured_products(source):
         except (requests.RequestException, ET.ParseError) as exc:
             log.warning('Source=%s sitemap failed: %s', source['name'], exc)
 
+    # Category landing pages can expose product links even when XML sitemaps
+    # are unavailable or use opaque identifiers. Follow one extra category
+    # level, subject to robots rules and a strict request budget.
+    pattern = re.compile(source.get('product_url_pattern', r'product|bike'), re.I)
+    categories = source.get('category_urls', [])[:5]
+    category_pages = []
+    for category in categories:
+        category_url = urljoin(base + '/', category)
+        if not allowed(category_url):
+            log.info('Source=%s category blocked by robots: %s', source['name'], category_url)
+            continue
+        category_pages.append(category_url)
+    discovered = []
+    for category_url in category_pages:
+        try:
+            response = fetch(category_url)
+            if response is None:
+                continue
+            parser = Links()
+            parser.feed(response.text)
+            for href in parser.hrefs:
+                target = urljoin(category_url, href)
+                if pattern.search(urlparse(target).path) and allowed(target):
+                    discovered.append(target.split('#')[0].split('?')[0])
+        except (requests.RequestException, ValueError) as exc:
+            log.warning('Source=%s category failed: %s', source['name'], exc)
+    log.info('Source=%s category_candidates=%s pages=%s',
+             source['name'], len(set(discovered)), len(category_pages))
     max_products = min(30, max(1, int(source.get('max_products', 12))))
-    candidates = list(dict.fromkeys(urls))[:max_products]
+    candidates = list(dict.fromkeys(discovered + urls))[:max_products]
     log.info('Source=%s sitemap_candidates=%s checked=%s', source['name'],
              len(candidates), len(checked))
     for url in candidates:
