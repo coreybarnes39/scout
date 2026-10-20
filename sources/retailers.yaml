@@ -5,3 +5,12 @@ contender:
   base_url: https://contenderbicycles.com
   collection: bikes
   max_pages: 1 # Increase after confirming results; Sheets writes one row per variant
+
+obed:
+  name: OBED Bikes
+  type: shopify
+  base_url: https://obedbikes.com
+  collection: gravel
+  max_pages: 1
+  hsa_pathway: Truemed
+  hsa_info_url: https://obedbikes.com/pages/obed-bikes-pay-with-your-hsa-fsa-through-trumed
