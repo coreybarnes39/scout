@@ -107,3 +107,32 @@ def write_top_results(sheet, profile, listings, top_n=10, deduplicate=True):
     tab.clear()
     tab.update(range_name=f'A1:L{len(rows)}', values=rows, value_input_option='RAW')
     return selected
+
+REVIEW_HEADERS = ['retailer', 'bike', 'price', 'drivetrain', 'size', 'hsa_pathway',
+                  'reason', 'link', 'updated_at']
+HEALTH_HEADERS = ['retailer', 'status', 'examined', 'qualified', 'needs_review',
+                  'rejections', 'error', 'updated_at']
+
+
+def write_diagnostics(sheet, review, health):
+    """Replace current-run diagnostics without changing historical Listings."""
+    doc = sheet.spreadsheet
+    now = datetime.now(timezone.utc).isoformat(timespec='seconds')
+    for title, headers, data in [
+        ('Needs Verification', REVIEW_HEADERS, [
+            [i['source'], i['title'], i['price'], i.get('drivetrain', 'Unverified'),
+             i.get('frame_size', 'Unverified'), i.get('hsa_pathway', ''),
+             i.get('review_reason', ''), i['url'], now] for i in review]),
+        ('Retailer Status', HEALTH_HEADERS, [
+            [h['source'], h['status'], h['examined'], h['qualified'],
+             h['needs_review'], h['rejections'], h['error'], now] for h in health]),
+    ]:
+        try:
+            tab = doc.worksheet(title)
+        except gspread.WorksheetNotFound:
+            tab = doc.add_worksheet(title=title, rows=max(30, len(data) + 1),
+                                    cols=len(headers))
+        rows = [headers] + data
+        tab.clear()
+        tab.update(range_name=f'A1:{chr(64 + len(headers))}{len(rows)}',
+                   values=rows, value_input_option='RAW')
