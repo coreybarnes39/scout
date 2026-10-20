@@ -102,7 +102,8 @@ def write_top_results(sheet, profile, listings, top_n=10, deduplicate=True):
         rows.append([rank, profile, item['title'], item.get('frame_size', 'Unverified'),
                      item['price'], item['score'], item.get('drivetrain', 'Unverified'),
                      item.get('hsa_status', 'Unverified'), why, item['source'],
-                     item['url'], now, item.get('confidence', ''),\n                     json.dumps(item.get('evidence', {}), sort_keys=True)])
+                     item['url'], now, item.get('confidence', ''),
+                     json.dumps(item.get('evidence', {}), sort_keys=True)])
     # Clear stale rows when fewer bikes qualify on the next run.
     tab.clear()
     tab.update(range_name=f'A1:N{len(rows)}', values=rows, value_input_option='RAW')
