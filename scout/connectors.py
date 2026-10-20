@@ -161,23 +161,46 @@ def _structured_products(source):
             continue
         category_pages.append(category_url)
     discovered = []
-    for category_url in category_pages:
-        try:
-            response = fetch(category_url)
-            if response is None:
+    visited_categories = set()
+    frontier = list(category_pages)
+    max_category_pages = min(16, max(1, int(source.get('max_category_pages', 12))))
+    max_depth = min(3, max(1, int(source.get('category_depth', 2))))
+    # Trek uses /c/ for categories and /a/ or /f/ for individual models.
+    product_path = re.compile(source.get('product_path_pattern', r'/products?/'), re.I)
+    category_path = re.compile(source.get('category_path_pattern', r'/c/'), re.I)
+    for depth in range(max_depth):
+        next_frontier = []
+        for category_url in frontier:
+            if category_url in visited_categories or len(visited_categories) >= max_category_pages:
                 continue
-            parser = Links()
-            parser.feed(response.text)
-            for href in parser.hrefs:
-                target = urljoin(category_url, href)
-                if pattern.search(urlparse(target).path) and allowed(target):
-                    discovered.append(target.split('#')[0].split('?')[0])
-        except (requests.RequestException, ValueError) as exc:
-            log.warning('Source=%s category failed: %s', source['name'], exc)
-    log.info('Source=%s category_candidates=%s pages=%s',
-             source['name'], len(set(discovered)), len(category_pages))
+            visited_categories.add(category_url)
+            try:
+                response = fetch(category_url)
+                if response is None:
+                    continue
+                parser = Links()
+                parser.feed(response.text)
+                for href in parser.hrefs:
+                    target = urljoin(category_url, href)
+                    path = urlparse(target).path
+                    if not pattern.search(path) or not allowed(target):
+                        continue
+                    target = target.split('#')[0].split('?')[0]
+                    if product_path.search(path):
+                        discovered.append(target)
+                    elif category_path.search(path) and target not in visited_categories:
+                        next_frontier.append(target)
+            except (requests.RequestException, ValueError) as exc:
+                log.warning('Source=%s category failed: %s', source['name'], exc)
+        frontier = list(dict.fromkeys(next_frontier))[:max_category_pages]
+        if not frontier:
+            break
+    log.info('Source=%s product_candidates=%s category_pages_checked=%s',
+             source['name'], len(set(discovered)), len(visited_categories))
     max_products = min(30, max(1, int(source.get('max_products', 12))))
-    candidates = list(dict.fromkeys(discovered + urls))[:max_products]
+    candidates = list(dict.fromkeys(discovered + [
+        u for u in urls if product_path.search(urlparse(u).path)
+    ]))[:max_products]
     log.info('Source=%s sitemap_candidates=%s checked=%s', source['name'],
              len(candidates), len(checked))
     for url in candidates:
