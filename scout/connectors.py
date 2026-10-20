@@ -263,7 +263,21 @@ def _trek_catalog(source):
     import json
     import re
     from urllib.robotparser import RobotFileParser
-    from urllib.parse import urljoin
+    from urllib.parse import urljoin, urlparse
+    from html.parser import HTMLParser
+
+    class ProductLinks(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.links = []
+        def handle_starttag(self, tag, attrs):
+            if tag == 'a':
+                href = dict(attrs).get('href', '')
+                if href:
+                    self.links.append(href)
+
+    def slug(text):
+        return re.sub(r'[^a-z0-9]+', '-', text.lower()).strip('-')
 
     base = source['base_url'].rstrip('/')
     if urlparse(base).scheme != 'https':
@@ -285,6 +299,57 @@ def _trek_catalog(source):
             response = requests.get(url, headers=HEADERS, timeout=20)
             log.info('Source=%s catalog URL=%s HTTP=%s', source['name'], url, response.status_code)
             response.raise_for_status()
+            links = ProductLinks()
+            links.feed(response.text)
+            product_links = []
+            for href in links.links:
+                candidate = urljoin(url, href)
+                parsed = urlparse(candidate)
+                if (parsed.scheme == 'https' and parsed.netloc == urlparse(base).netloc
+                        and re.search(r'/(?:a|p)/[^/]+/? of ecommerce product impressions in
+            # the HTML. Parse only that explicitly public structured payload.
+            arrays = re.findall(r'"impressions"\s*:\s*(\[\s*\{.*?\}\s*\])', response.text, re.S)
+            for raw in arrays:
+                try:
+                    impressions = json.loads(raw)
+                except ValueError:
+                    continue
+                for product in impressions:
+                    title = str(product.get('name') or '')
+                    if not re.search(r'checkpoint|checkmate|check-out', title, re.I):
+                        continue
+                    try:
+                        price = float(product['price'])
+                    except (KeyError, TypeError, ValueError):
+                        continue
+                    model = str(product.get('id') or '')
+                    if not model:
+                        continue
+                    title_slug = slug(title)
+                    matches = [candidate for candidate in product_links
+                               if title_slug and title_slug in urlparse(candidate).path.lower()]
+                    link = matches[0] if matches else url + '?model=' + model
+                    if not matches:
+                        log.info('Source=%s direct link unverified for model=%s title=%s',
+                                 source['name'], model, title)
+                    count += 1
+                    yield {
+                        'id': _id(base + '/trek-model/' + model),
+                        'source': source['name'], 'title': title,
+                        'variant_title': '', 'description': '',
+                        'url': link, 'price': price, 'currency': 'USD',
+                        # The public category feed does not expose size stock.
+                        'available': True,
+                        'inventory_status': 'Unverified',
+                        'product_link_status': 'Verified from category link' if matches else 'Category fallback',
+                    }
+        except requests.RequestException as exc:
+            log.warning('Source=%s catalog failed: %s', source['name'], exc)
+    log.info('Source=%s catalog_products=%s (stock and size unverified)', source['name'], count)
+, parsed.path)):
+                    product_links.append(candidate.split('?')[0].split('#')[0])
+            product_links = list(dict.fromkeys(product_links))
+            log.info('Source=%s catalog_product_links=%s', source['name'], len(product_links))
             # Trek embeds a JSON array of ecommerce product impressions in
             # the HTML. Parse only that explicitly public structured payload.
             arrays = re.findall(r'"impressions"\s*:\s*(\[\s*\{.*?\}\s*\])', response.text, re.S)
