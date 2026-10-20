@@ -61,6 +61,10 @@ trek:
   base_url: https://www.trekbikes.com
   category_urls: ['/us/en_US/bikes/road-bikes/gravel-bikes/c/B546/', '/us/en_US/search/?text=checkpoint']
   product_url_pattern: '(checkpoint|checkmate|gravel)'
+  product_path_pattern: '/(?:a|f)/'
+  category_path_pattern: '/c/'
+  category_depth: 3
+  max_category_pages: 16
   max_sitemaps: 5
   max_products: 20
 
