@@ -57,9 +57,9 @@ priority:
 # This connector is intentionally bounded and honors robots.txt.
 trek:
   name: Trek Bikes
-  type: sitemap_products
+  type: trek_catalog
   base_url: https://www.trekbikes.com
-  category_urls: ['/us/en_US/bikes/road-bikes/gravel-bikes/c/B546/', '/us/en_US/search/?text=checkpoint']
+  category_urls: ['/us/en_US/bikes/bikepacking-touring-bikes/checkpoint/checkpoint-sl/c/B224-1/', '/us/en_US/bikes/road-bikes/gravel-bikes/c/B546/']
   product_url_pattern: '(checkpoint|checkmate|gravel)'
   product_path_pattern: '/(?:a|f)/'
   category_path_pattern: '/c/'
