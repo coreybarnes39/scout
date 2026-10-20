@@ -1,10 +1,11 @@
-# Shared source registry. Profiles reference IDs, not URLs.
+# Shopify collection feeds are candidates until a live Scout run verifies access.
+# A failed source is logged and does not interrupt the other retailers.
 contender:
   name: Contender Bicycles
   type: shopify
   base_url: https://contenderbicycles.com
   collection: bikes
-  max_pages: 1 # Increase after confirming results; Sheets writes one row per variant
+  max_pages: 2
 
 obed:
   name: OBED Bikes
@@ -14,3 +15,46 @@ obed:
   max_pages: 1
   hsa_pathway: Truemed
   hsa_info_url: https://obedbikes.com/pages/obed-bikes-pay-with-your-hsa-fsa-through-trumed
+
+# Candidate Shopify feeds: verify HTTP 200 and product counts in Actions logs.
+mikes:
+  name: Mike's Bikes
+  type: shopify
+  base_url: https://mikesbikes.com
+  collection: road-bikes-adventure-gravel
+  max_pages: 2
+
+bikesonline:
+  name: BikesOnline
+  type: shopify
+  base_url: https://www.bikesonline.com
+  collection: gravel-bikes
+  max_pages: 2
+  hsa_pathway: Truemed
+  hsa_info_url: https://www.truemed.com/shop/partners/bikesonline
+
+lauf:
+  name: Lauf Cycles
+  type: shopify
+  base_url: https://www.laufcycles.com
+  collection: all
+  max_pages: 2
+  hsa_pathway: Truemed
+  hsa_info_url: https://www.truemed.com/shop/partners/lauf-cycles
+
+priority:
+  name: Priority Bicycles
+  type: shopify
+  base_url: https://www.prioritybicycles.com
+  collection: all
+  max_pages: 2
+  hsa_pathway: Truemed
+  hsa_info_url: https://www.truemed.com/shop/partners/priority-bicycles
+
+# Sites needing separate connector discovery (not activated until verified):
+# Trek: https://www.trekbikes.com
+# Specialized: https://www.specialized.com
+# Jenson USA: https://www.jensonusa.com/gravel-bikes/
+# Competitive Cyclist: https://www.competitivecyclist.com
+# Orbea: https://www.orbea.com
+# Buycycle: https://buycycle.com
