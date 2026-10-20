@@ -9,7 +9,7 @@ from email.message import EmailMessage
 import yaml
 from .connectors import collect
 from .scoring import score, rejection_reason
-from .storage import open_sheet, save, write_top_results
+from .storage import open_sheet, save, write_top_results, write_diagnostics
 
 def send_email(alerts):
     if not alerts or not all(os.getenv(k) for k in ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASSWORD', 'ALERT_TO']): return
@@ -31,6 +31,7 @@ def run(profile_filter=None, dry_run=False, debug=False):
         with open(path) as f: profile = yaml.safe_load(f)
         if not profile.get('enabled') or (profile_filter and profile['name'] != profile_filter): continue
         found, reasons = {}, Counter()
+        review, health = [], []
         for source_id in profile.get('sources', []):
             source = registry.get(source_id) if isinstance(source_id, str) else source_id
             if not source:
@@ -39,6 +40,7 @@ def run(profile_filter=None, dry_run=False, debug=False):
             source = dict(source)
             source.setdefault('name', source_id if isinstance(source_id, str) else 'Unnamed source')
             source_reasons = Counter()
+            source_error = ''
             try:
                 for item in collect(source):
                     source_reasons['variants_seen'] += 1
@@ -47,6 +49,14 @@ def run(profile_filter=None, dry_run=False, debug=False):
                     reason = rejection_reason(item, profile)
                     if reason:
                         source_reasons[reason] += 1
+                        if (profile.get('category') == 'cycling' and
+                                reason == 'electronic_unverified' and
+                                item.get('available', True) and
+                                len(review) < 250):
+                            item['review_reason'] = 'Electronic shifting not confirmed'
+                            item['drivetrain'] = 'Unverified'
+                            item['frame_size'] = 'Unverified'
+                            review.append(item)
                         continue
                     result = score(item, profile)
                     if result is None:
@@ -58,8 +68,23 @@ def run(profile_filter=None, dry_run=False, debug=False):
                     found[item['id']] = item
                     source_reasons['relevant'] += 1
             except Exception as exc:
+                source_error = str(exc)
                 print(f"[SCOUT] Source {source['name']} failed: {exc}")
             reasons.update(source_reasons)
+            examined = source_reasons['variants_seen']
+            qualified = source_reasons['relevant']
+            review_count = sum(1 for i in review if i['source'] == source['name'])
+            status = ('Connector Failed' if source_error else
+                      'No Products Found' if not examined else
+                      'Working' if qualified else
+                      'Needs Verification' if review_count else 'No Matches')
+            health.append({'source': source['name'], 'status': status,
+                           'examined': examined, 'qualified': qualified,
+                           'needs_review': review_count,
+                           'rejections': str(dict(source_reasons)),
+                           'error': source_error})
+            print(f"[SCOUT] Retailer status: {source['name']} = {status} "
+                  f"({examined} examined, {qualified} qualified, {review_count} review)")
             if debug:
                 print(f"[SCOUT] {source['name']}: {dict(source_reasons)}")
             time.sleep(1)
@@ -73,6 +98,8 @@ def run(profile_filter=None, dry_run=False, debug=False):
         if dry_run:
             continue
         alerts = save(sheet, profile['name'], items, profile.get('alerts', {}).get('price_drop_pct', 10))
+        if profile.get('category') == 'cycling':
+            write_diagnostics(sheet, review, health)
         results_config = profile.get('results', {})
         if results_config.get('top_n'):
             selected = write_top_results(sheet, profile['name'], items,
