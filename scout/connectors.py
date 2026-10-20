@@ -306,8 +306,11 @@ def _trek_catalog(source):
                 candidate = urljoin(url, href)
                 parsed = urlparse(candidate)
                 if (parsed.scheme == 'https' and parsed.netloc == urlparse(base).netloc
-                        and re.search(r'/(?:a|p)/[^/]+/? of ecommerce product impressions in
-            # the HTML. Parse only that explicitly public structured payload.
+                        and re.search(r'/(?:a|p)/[^/]+/?$', parsed.path)):
+                    product_links.append(candidate.split('?')[0].split('#')[0])
+            product_links = list(dict.fromkeys(product_links))
+            log.info('Source=%s catalog_product_links=%s', source['name'], len(product_links))
+            # Trek embeds ecommerce product impressions in the HTML.
             arrays = re.findall(r'"impressions"\s*:\s*(\[\s*\{.*?\}\s*\])', response.text, re.S)
             for raw in arrays:
                 try:
