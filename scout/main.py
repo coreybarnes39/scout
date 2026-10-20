@@ -42,6 +42,8 @@ def run(profile_filter=None, dry_run=False, debug=False):
             try:
                 for item in collect(source):
                     source_reasons['variants_seen'] += 1
+                    if source.get('hsa_pathway'):
+                        item['hsa_pathway'] = source['hsa_pathway']
                     reason = rejection_reason(item, profile)
                     if reason:
                         source_reasons[reason] += 1
