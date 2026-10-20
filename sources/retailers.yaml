@@ -59,6 +59,7 @@ trek:
   name: Trek Bikes
   type: sitemap_products
   base_url: https://www.trekbikes.com
+  category_urls: ['/us/en_US/bikes/road-bikes/gravel-bikes/c/B546/', '/us/en_US/search/?text=checkpoint']
   product_url_pattern: '(checkpoint|checkmate|gravel)'
   max_sitemaps: 5
   max_products: 20
@@ -67,6 +68,7 @@ specialized:
   name: Specialized
   type: sitemap_products
   base_url: https://www.specialized.com
+  category_urls: ['/us/en/shop/bikes/road-bikes/gravel-bikes/c/roadgravel', '/us/en/search/?text=diverge']
   product_url_pattern: '(diverge|crux|gravel)'
   max_sitemaps: 5
   max_products: 20
@@ -75,6 +77,7 @@ jenson:
   name: Jenson USA
   type: sitemap_products
   base_url: https://www.jensonusa.com
+  category_urls: ['/gravel-bikes', '/search?query=gravel']
   product_url_pattern: '(gravel|checkpoint|diverge|crux|terra|urs|revolt)'
   max_sitemaps: 5
   max_products: 20
