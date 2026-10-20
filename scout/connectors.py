@@ -349,39 +349,3 @@ def _trek_catalog(source):
         except requests.RequestException as exc:
             log.warning('Source=%s catalog failed: %s', source['name'], exc)
     log.info('Source=%s catalog_products=%s (stock and size unverified)', source['name'], count)
-, parsed.path)):
-                    product_links.append(candidate.split('?')[0].split('#')[0])
-            product_links = list(dict.fromkeys(product_links))
-            log.info('Source=%s catalog_product_links=%s', source['name'], len(product_links))
-            # Trek embeds a JSON array of ecommerce product impressions in
-            # the HTML. Parse only that explicitly public structured payload.
-            arrays = re.findall(r'"impressions"\s*:\s*(\[\s*\{.*?\}\s*\])', response.text, re.S)
-            for raw in arrays:
-                try:
-                    impressions = json.loads(raw)
-                except ValueError:
-                    continue
-                for product in impressions:
-                    title = str(product.get('name') or '')
-                    if not re.search(r'checkpoint|checkmate|check-out', title, re.I):
-                        continue
-                    try:
-                        price = float(product['price'])
-                    except (KeyError, TypeError, ValueError):
-                        continue
-                    model = str(product.get('id') or '')
-                    if not model:
-                        continue
-                    link = url + ('&' if '?' in url else '?') + 'model=' + model
-                    count += 1
-                    yield {
-                        'id': _id(base + '/trek-model/' + model),
-                        'source': source['name'], 'title': title,
-                        'variant_title': '', 'description': '',
-                        'url': link, 'price': price, 'currency': 'USD',
-                        # The public category feed does not expose size stock.
-                        'available': True,
-                    }
-        except requests.RequestException as exc:
-            log.warning('Source=%s catalog failed: %s', source['name'], exc)
-    log.info('Source=%s catalog_products=%s (stock and size unverified)', source['name'], count)
