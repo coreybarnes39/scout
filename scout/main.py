@@ -51,6 +51,8 @@ def run(profile_filter=None, dry_run=False, debug=False):
                         source_reasons['other'] += 1
                         continue
                     item['score'], item['signals'] = result
+                    if source.get('hsa_pathway'):
+                        item['hsa_status'] = f"{source['hsa_pathway']} pathway; qualification required"
                     found[item['id']] = item
                     source_reasons['relevant'] += 1
             except Exception as exc:
