@@ -328,7 +328,7 @@ def _trek_catalog(source):
                     title_slug = slug(title)
                     matches = [candidate for candidate in product_links
                                if title_slug and title_slug in urlparse(candidate).path.lower()]
-                    link = matches[0] if matches else url
+                    link = matches[0] if matches else url + '?model=' + model
                     if not matches:
                         log.info('Source=%s direct link unverified for model=%s title=%s',
                                  source['name'], model, title)
