@@ -41,6 +41,8 @@ def collect(source):
                            'available': variant.get('available', True)}
             if len(products) < 250:
                 break
+    elif kind == 'trek_catalog':
+        yield from _trek_catalog(source)
     elif kind == 'sitemap_products':
         yield from _structured_products(source)
     elif kind == 'rss':
@@ -251,3 +253,67 @@ def _structured_products(source):
             time.sleep(0.25)
         except (requests.RequestException, ValueError) as exc:
             log.warning('Source=%s product failed: %s', source['name'], exc)
+
+
+def _trek_catalog(source):
+    """Read Trek's public category-page ecommerce impressions, not sitemap links.
+
+    Category prices are advertised prices, not verified size-level stock.
+    """
+    import json
+    import re
+    from urllib.robotparser import RobotFileParser
+    from urllib.parse import urljoin
+
+    base = source['base_url'].rstrip('/')
+    if urlparse(base).scheme != 'https':
+        raise ValueError('Only HTTPS sources supported')
+    robot = RobotFileParser()
+    robot.set_url(base + '/robots.txt')
+    try:
+        robot.read()
+    except Exception as exc:
+        log.warning('Source=%s robots unavailable: %s', source['name'], exc)
+        return
+    count = 0
+    for path in source.get('category_urls', [])[:4]:
+        url = urljoin(base + '/', path)
+        if urlparse(url).netloc != urlparse(base).netloc or not robot.can_fetch(HEADERS['User-Agent'], url):
+            log.warning('Source=%s catalog disallowed: %s', source['name'], url)
+            continue
+        try:
+            response = requests.get(url, headers=HEADERS, timeout=20)
+            log.info('Source=%s catalog URL=%s HTTP=%s', source['name'], url, response.status_code)
+            response.raise_for_status()
+            # Trek embeds a JSON array of ecommerce product impressions in
+            # the HTML. Parse only that explicitly public structured payload.
+            arrays = re.findall(r'"impressions"\s*:\s*(\[\s*\{.*?\}\s*\])', response.text, re.S)
+            for raw in arrays:
+                try:
+                    impressions = json.loads(raw)
+                except ValueError:
+                    continue
+                for product in impressions:
+                    title = str(product.get('name') or '')
+                    if not re.search(r'checkpoint|checkmate|check-out', title, re.I):
+                        continue
+                    try:
+                        price = float(product['price'])
+                    except (KeyError, TypeError, ValueError):
+                        continue
+                    model = str(product.get('id') or '')
+                    if not model:
+                        continue
+                    link = url + ('&' if '?' in url else '?') + 'model=' + model
+                    count += 1
+                    yield {
+                        'id': _id(base + '/trek-model/' + model),
+                        'source': source['name'], 'title': title,
+                        'variant_title': '', 'description': '',
+                        'url': link, 'price': price, 'currency': 'USD',
+                        # The public category feed does not expose size stock.
+                        'available': True,
+                    }
+        except requests.RequestException as exc:
+            log.warning('Source=%s catalog failed: %s', source['name'], exc)
+    log.info('Source=%s catalog_products=%s (stock and size unverified)', source['name'], count)
