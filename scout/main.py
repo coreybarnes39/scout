@@ -32,6 +32,7 @@ def run(profile_filter=None, dry_run=False, debug=False):
         if not profile.get('enabled') or (profile_filter and profile['name'] != profile_filter): continue
         found, reasons = {}, Counter()
         review, health = [], []
+        review_by_source = {}
         for source_id in profile.get('sources', []):
             source = registry.get(source_id) if isinstance(source_id, str) else source_id
             if not source:
@@ -52,11 +53,11 @@ def run(profile_filter=None, dry_run=False, debug=False):
                         if (profile.get('category') == 'cycling' and
                                 reason == 'electronic_unverified' and
                                 item.get('available', True) and
-                                len(review) < 250):
+                                len(review_by_source.get(source['name'], [])) < 25):
                             item['review_reason'] = 'Electronic shifting not confirmed'
                             item['drivetrain'] = 'Unverified'
                             item['frame_size'] = 'Unverified'
-                            review.append(item)
+                            review_by_source.setdefault(source['name'], []).append(item)
                         continue
                     result = score(item, profile)
                     if result is None:
@@ -73,7 +74,7 @@ def run(profile_filter=None, dry_run=False, debug=False):
             reasons.update(source_reasons)
             examined = source_reasons['variants_seen']
             qualified = source_reasons['relevant']
-            review_count = sum(1 for i in review if i['source'] == source['name'])
+            review_count = len(review_by_source.get(source['name'], []))
             status = ('Connector Failed' if source_error else
                       'No Products Found' if not examined else
                       'Working' if qualified else
@@ -88,6 +89,7 @@ def run(profile_filter=None, dry_run=False, debug=False):
             if debug:
                 print(f"[SCOUT] {source['name']}: {dict(source_reasons)}")
             time.sleep(1)
+        review = [item for batch in review_by_source.values() for item in batch]
         items = list(found.values())
         threshold = profile.get('alerts', {}).get('min_score', 0)
         print(f"{profile['name']}: {len(items)} relevant listings, {sum(i['score'] >= threshold for i in items)} above alert threshold")
