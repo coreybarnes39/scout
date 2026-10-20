@@ -66,14 +66,14 @@ def save(sheet, profile, listings, price_drop_pct):
     return alerts
 
 TOP_HEADERS = ['rank', 'profile', 'bike', 'size', 'price', 'score', 'drivetrain',
-               'hsa_status', 'why_it_ranked', 'retailer', 'link', 'updated_at']
+               'hsa_status', 'why_it_ranked', 'retailer', 'link', 'updated_at', 'confidence', 'evidence']
 
 
 def write_top_results(sheet, profile, listings, top_n=10, deduplicate=True):
     """Replace the human-facing shortlist; keep Listings as the historical store."""
     from urllib.parse import urlsplit
     ranked = sorted(listings, key=lambda item: (
-        -item['score'], item['price'], item['title']))
+        -item['score'], -item.get('confidence', 0), item['price'], item['title']))
     selected = []
     seen = set()
     for item in ranked:
@@ -102,10 +102,10 @@ def write_top_results(sheet, profile, listings, top_n=10, deduplicate=True):
         rows.append([rank, profile, item['title'], item.get('frame_size', 'Unverified'),
                      item['price'], item['score'], item.get('drivetrain', 'Unverified'),
                      item.get('hsa_status', 'Unverified'), why, item['source'],
-                     item['url'], now])
+                     item['url'], now, item.get('confidence', ''),\n                     json.dumps(item.get('evidence', {}), sort_keys=True)])
     # Clear stale rows when fewer bikes qualify on the next run.
     tab.clear()
-    tab.update(range_name=f'A1:L{len(rows)}', values=rows, value_input_option='RAW')
+    tab.update(range_name=f'A1:N{len(rows)}', values=rows, value_input_option='RAW')
     return selected
 
 REVIEW_HEADERS = ['retailer', 'bike', 'price', 'drivetrain', 'size', 'hsa_pathway',
