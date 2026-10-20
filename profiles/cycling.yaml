@@ -1,7 +1,7 @@
 name: cycling
 enabled: true
 category: cycling
-sources: [contender, obed, mikes, bikesonline, lauf, priority]
+sources: [contender, obed, mikes, bikesonline, lauf, priority, trek, specialized, jenson, competitive_cyclist, orbea, buycycle]
 filters:
   max_price: 5000
   preferred_max_price: 4000
