@@ -41,7 +41,10 @@ def rejection_reason(item, profile):
     if filters.get('required_any') and not any(word.lower() in text for word in filters['required_any']): return 'not_relevant'
     if profile.get('category') == 'cycling':
         electronic = filters.get('electronic_shifting', {})
-        if electronic.get('required') and drivetrain(text) == 'Unverified':
+        # Configurable OBED bikes may mention AXS/Di2 in the description even
+        # when the selected variant has no specified drivetrain.
+        drive_text = normalize(item['title']) if item.get('hsa_pathway') else text
+        if electronic.get('required') and drivetrain(drive_text) == 'Unverified':
             return 'electronic_unverified'
         size_filter = filters.get('frame_sizes', {})
         if isinstance(size_filter, dict) and size_filter.get('required'):
@@ -64,7 +67,7 @@ def score(item, profile):
     price = item.get('price')
     if rejection_reason(item, profile): return None
     if profile.get('category') == 'cycling':
-        drive = drivetrain(text)
+        drive = drivetrain(normalize(item['title']) if item.get('hsa_pathway') else text)
         size = variant_size(item)
         accepted = {str(x).upper() for x in filters.get('frame_sizes', {}).get('accepted', ['52', '53', '54', 'S', 'M'])}
         signals = {
