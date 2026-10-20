@@ -70,18 +70,35 @@ def score(item, profile):
         drive = drivetrain(normalize(item['title']) if item.get('hsa_pathway') else text)
         size = variant_size(item)
         accepted = {str(x).upper() for x in filters.get('frame_sizes', {}).get('accepted', ['52', '53', '54', 'S', 'M'])}
-        signals = {
-            'carbon': any(x in text for x in ['carbon', 'cf ', 'cfr ', 'sl 5', 'sl 6']),
-            'size': size is not None and size.upper() in accepted,
-            'electronic': drive != 'Unverified',
-            'removable_battery': drive == 'SRAM AXS',
-            'bikepacking': any(x in text for x in ['rack mount', 'fork mount', 'cargo mount', 'bikepacking', 'mounting points']),
-            'endurance': any(x in text for x in ['endurance', 'relaxed geometry', 'upright']),
-            'road_compatible': any(x in text for x in ['700c', 'road tire', 'road wheel']),
-        }
+        # Each criterion is (weight, evidence-based quality in [0,1] or None).
+        # None means unknown, NOT a negative. Never infer specs from model names.
+        # Fit 25, versatility 25, components 20, comfort 15, value 15.
+        size_fit = (1.0 if size.upper() in accepted else 0.0) if size else None
+        mounts = 1.0 if any(x in text for x in ['rack mount', 'fork mount', 'cargo mount', 'bikepacking', 'mounting points', 'fender mount']) else None
+        tires = 1.0 if any(x in text for x in ['tire clearance', 'tyre clearance', '700c', '650b', 'gravel tire', 'road tire']) else None
+        # Electronic shifting is a hard requirement; don't award 25 points again.
+        # AXS earns a modest preference for its removable batteries.
+        components = 1.0 if drive == 'SRAM AXS' else 0.75 if drive == 'Shimano Di2' else 0.5 if drive != 'Unverified' else None
+        comfort = 1.0 if any(x in text for x in ['endurance', 'relaxed geometry', 'upright', 'compliance', 'vibration damping', 'is ospeed', 'isospeed']) else None
+        # Price is verified, but value relative to comparable components isn't.
+        # Reward affordability modestly without pretending to know market value.
+        value = 1.0 if price <= filters.get('preferred_max_price', 4000) else max(0.0, 1 - (price - filters.get('preferred_max_price', 4000)) / max(1, filters.get('max_price', 5000) - filters.get('preferred_max_price', 4000)))
+        criteria = {'fit': (25, size_fit), 'mounts': (15, mounts),
+                    'road_gravel': (10, tires), 'components': (20, components),
+                    'comfort': (15, comfort), 'value': (15, value)}
+        known_weight = sum(weight for weight, quality in criteria.values() if quality is not None)
+        # Unknown criteria are neutral; confidence reveals evidence coverage.
+        base_score = round(sum(weight * (0.5 if quality is None else quality)
+                               for weight, quality in criteria.values()))
+        item['confidence'] = known_weight
         item['drivetrain'] = drive
         item['frame_size'] = size or 'Unverified'
         item['hsa_status'] = 'Unverified'
+        signals = {key: (quality is not None and quality >= 0.75)
+                   for key, (_, quality) in criteria.items()}
+        item['evidence'] = {key: ('Unverified' if quality is None else round(quality * 100))
+                            for key, (_, quality) in criteria.items()}
+        return base_score, signals
     else:
         keywords = profile.get('keywords', [])
         signals = {'matching_keywords': any(k.lower() in text for k in keywords),
