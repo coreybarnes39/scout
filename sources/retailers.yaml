@@ -51,10 +51,54 @@ priority:
   hsa_pathway: Truemed
   hsa_info_url: https://www.truemed.com/shop/partners/priority-bicycles
 
-# Sites needing separate connector discovery (not activated until verified):
-# Trek: https://www.trekbikes.com
-# Specialized: https://www.specialized.com
-# Jenson USA: https://www.jensonusa.com/gravel-bikes/
-# Competitive Cyclist: https://www.competitivecyclist.com
-# Orbea: https://www.orbea.com
-# Buycycle: https://buycycle.com
+# Sites using experimental sitemap discovery; validate feed coverage before relying on them.
+
+# Sitemap + JSON-LD discovery candidates; each must be validated in run logs.
+# This connector is intentionally bounded and honors robots.txt.
+trek:
+  name: Trek Bikes
+  type: sitemap_products
+  base_url: https://www.trekbikes.com
+  product_url_pattern: '(checkpoint|checkmate|gravel)'
+  max_sitemaps: 5
+  max_products: 20
+
+specialized:
+  name: Specialized
+  type: sitemap_products
+  base_url: https://www.specialized.com
+  product_url_pattern: '(diverge|crux|gravel)'
+  max_sitemaps: 5
+  max_products: 20
+
+jenson:
+  name: Jenson USA
+  type: sitemap_products
+  base_url: https://www.jensonusa.com
+  product_url_pattern: '(gravel|checkpoint|diverge|crux|terra|urs|revolt)'
+  max_sitemaps: 5
+  max_products: 20
+
+competitive_cyclist:
+  name: Competitive Cyclist
+  type: sitemap_products
+  base_url: https://www.competitivecyclist.com
+  product_url_pattern: '(gravel|checkpoint|diverge|crux|terra|urs|revolt)'
+  max_sitemaps: 5
+  max_products: 20
+
+orbea:
+  name: Orbea
+  type: sitemap_products
+  base_url: https://www.orbea.com
+  product_url_pattern: '(terra|gravel)'
+  max_sitemaps: 5
+  max_products: 20
+
+buycycle:
+  name: Buycycle
+  type: sitemap_products
+  base_url: https://buycycle.com
+  product_url_pattern: '(gravel|checkpoint|diverge|crux|terra|urs|revolt)'
+  max_sitemaps: 5
+  max_products: 20
