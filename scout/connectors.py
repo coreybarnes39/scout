@@ -36,6 +36,7 @@ def collect(source):
                     yield {'id': _id(link), 'source': source['name'],
                            'title': ' '.join([product.get('title', ''), variant.get('title', '')]).strip(),
                            'variant_title': variant.get('title', ''),
+                           'product_type': product.get('product_type', ''),
                            'description': product.get('body_html', '') or '',
                            'url': link, 'price': price, 'currency': 'USD',
                            'available': variant.get('available', True)}

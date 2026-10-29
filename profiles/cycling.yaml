@@ -16,8 +16,8 @@ filters:
     required: true
     preferred: sram_axs
   hsa:
-    required: false
-    include_unverified: true
+    required: true
+    include_unverified: false
 weights:
   carbon: 15
   size: 15

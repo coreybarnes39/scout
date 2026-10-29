@@ -15,9 +15,17 @@ obed:
   max_pages: 1
   hsa_pathway: Truemed
   hsa_info_url: https://obedbikes.com/pages/obed-bikes-pay-with-your-hsa-fsa-through-trumed
+  hsa_evidence:
+    kind: product_links
+    url: https://obedbikes.com/pages/obed-bikes-pay-with-your-hsa-fsa-through-trumed
+    section: Eligible Obed Products
 
 # Candidate Shopify feeds: verify HTTP 200 and product counts in Actions logs.
 mikes:
+  hsa_evidence:
+    kind: collection
+    collection: hsa-fsa-eligible-products
+    url: https://mikesbikes.com/collections/hsa-fsa-eligible-products
   name: Mike's Bikes
   type: shopify
   base_url: https://mikesbikes.com
@@ -43,6 +51,10 @@ lauf:
   hsa_info_url: https://www.truemed.com/shop/partners/lauf-cycles
 
 priority:
+  hsa_evidence:
+    kind: all_bicycles
+    url: https://www.prioritybicycles.com/pages/priority-bicycles-hsa-fsa
+    required_text: All Priority bicycles are eligible
   name: Priority Bicycles
   type: shopify
   base_url: https://www.prioritybicycles.com
