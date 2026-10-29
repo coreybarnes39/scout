@@ -10,6 +10,12 @@ HEADERS = ['profile', 'id', 'source', 'title', 'url', 'price', 'currency', 'scor
 BATCH_SIZE = 200
 
 
+def display_signals(signals):
+    """Unknown evidence must not appear as false in the Listings sheet."""
+    return {key: ('Unverified' if value is None else value)
+            for key, value in signals.items()}
+
+
 def open_sheet():
     creds = json.loads(os.environ['GOOGLE_SERVICE_ACCOUNT_JSON'])
     client = gspread.authorize(Credentials.from_service_account_info(
@@ -44,7 +50,7 @@ def save(sheet, profile, listings, price_drop_pct):
         row = [
             profile, item['id'], item['source'], item['title'], item['url'],
             item['price'], item['currency'], item['score'],
-            json.dumps(item['signals'], sort_keys=True),
+            json.dumps(display_signals(item['signals']), sort_keys=True),
             old[1]['first_seen'] if old else now,
             now, prev if prev is not None else '', status,
         ]
@@ -100,7 +106,7 @@ def write_top_results(sheet, profile, listings, top_n=10, deduplicate=True):
     for rank, item in enumerate(selected, 1):
         signals = item.get('signals', {})
         why = ', '.join(key.replace('_', ' ') for key, matched in signals.items()
-                        if matched) or 'Needs manual review'
+                        if matched is True) or 'Needs manual review'
         rows.append([rank, profile, item['title'], item.get('frame_size', 'Unverified'),
                      item['price'], item['score'], item.get('drivetrain', 'Unverified'),
                      item.get('hsa_status', 'Unverified'), why, item['source'],

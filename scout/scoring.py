@@ -1,6 +1,7 @@
 """Conservative rules: unknown product features never receive credit."""
 import re
 from html import unescape
+from .mounts import mounting_evidence
 
 def normalize(s):
     return re.sub(r'<[^>]+>', ' ', unescape(str(s or ''))).lower()
@@ -71,10 +72,10 @@ def score(item, profile):
         size = variant_size(item)
         accepted = {str(x).upper() for x in filters.get('frame_sizes', {}).get('accepted', ['52', '53', '54', 'S', 'M'])}
         # Each criterion is (weight, evidence-based quality in [0,1] or None).
-        # None means unknown, NOT a negative. Never infer specs from model names.
+        # None means unknown, NOT a negative. Use reviewed model records only when explicitly matched.
         # Fit 25, versatility 25, components 20, comfort 15, value 15.
         size_fit = (1.0 if size.upper() in accepted else 0.0) if size else None
-        mounts = 1.0 if any(x in text for x in ['rack mount', 'fork mount', 'cargo mount', 'bikepacking', 'mounting points', 'fender mount']) else None
+        mounts, mounts_source = mounting_evidence(item)
         tires = 1.0 if any(x in text for x in ['tire clearance', 'tyre clearance', '700c', '650b', 'gravel tire', 'road tire']) else None
         # Electronic shifting is a hard requirement; don't award 25 points again.
         # AXS earns a modest preference for its removable batteries.
@@ -94,10 +95,12 @@ def score(item, profile):
         item['drivetrain'] = drive
         item['frame_size'] = size or 'Unverified'
         item.setdefault('hsa_status', 'Unverified')
-        signals = {key: (quality is not None and quality >= 0.75)
+        signals = {key: (None if quality is None else quality >= 0.75)
                    for key, (_, quality) in criteria.items()}
         item['evidence'] = {key: ('Unverified' if quality is None else round(quality * 100))
                             for key, (_, quality) in criteria.items()}
+        if mounts_source:
+            item['evidence']['mounts_source'] = mounts_source
         return base_score, signals
     else:
         keywords = profile.get('keywords', [])
