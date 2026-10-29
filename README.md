@@ -111,3 +111,9 @@ price history; previous_price records only the immediately preceding price.
 Cycling results require freshly checked retailer evidence before scoring and again before Top 10 publication. Mike's Bikes is matched by product URL against its HSA collection (paginated public feed); OBED is matched against links in its eligible-products section; Priority requires its explicit all-bicycles policy plus a bicycle product type. A generic Truemed partnership or HSA mention is insufficient. Unknown retailers, failed requests, absent evidence, and unrecognized product types are excluded. Collection pagination is bounded to 20 pages; products beyond that bound remain unverified.
 
 Top 10 includes hsa_evidence_url and hsa_checked_at in UTC. Verified means a documented retailer pathway, conditional on personal qualification, not personal HSA approval. Fewer than ten eligible matches produces a shorter list. Existing historical Listings rows remain stored. Run `python -m pytest -q` for offline checks.
+
+
+### Manufacturer mount evidence
+Mount scoring includes reviewed Trek specifications for Checkpoint SL 5 Gen 3 (including AXS) and SL 6 AXS Gen 3. These dated manufacturer snapshots fill missing retailer descriptions and award the full 15-point mounts criterion. The Top 10 evidence JSON includes the manufacturer URL, review date and basis. They do not verify stock, size, drivetrain or HSA eligibility. Other generations, SLR, Checkpoint+, ambiguous titles and explicitly custom builds do not inherit these records. Listed mounting hardware and load limits still depend on the exact size and equipment.
+
+Unknown cycling signals are stored as `Unverified` in Listings rather than false; unknown signals do not enter the Top 10 ranking explanation. Existing historical rows change when a listing is next processed.

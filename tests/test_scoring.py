@@ -26,7 +26,7 @@ def test_upper_budget_included_with_penalty():
 def test_unknown_specs_are_neutral_not_failures():
     import yaml
     with open('profiles/cycling.yaml') as f: p = yaml.safe_load(f)
-    sparse = {'title': 'Checkpoint SL 6 AXS Gen 3', 'description': '',
+    sparse = {'title': 'Other Gravel Bike AXS', 'description': '',
               'price': 3699, 'available': True, 'hsa_verified': True}
     result = score(sparse, p)
     assert result is not None
