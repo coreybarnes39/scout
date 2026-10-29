@@ -57,7 +57,7 @@ def rejection_reason(item, profile):
         # HSA status must be verified independently. No retailer listing is
         # considered verified solely because it mentions HSA/FSA.
         hsa = filters.get('hsa', {})
-        if hsa.get('required') and not hsa.get('include_unverified', True):
+        if hsa.get('required') and not item.get('hsa_verified'):
             return 'hsa_unverified'
     return None
 
@@ -93,7 +93,7 @@ def score(item, profile):
         item['confidence'] = known_weight
         item['drivetrain'] = drive
         item['frame_size'] = size or 'Unverified'
-        item['hsa_status'] = 'Unverified'
+        item.setdefault('hsa_status', 'Unverified')
         signals = {key: (quality is not None and quality >= 0.75)
                    for key, (_, quality) in criteria.items()}
         item['evidence'] = {key: ('Unverified' if quality is None else round(quality * 100))

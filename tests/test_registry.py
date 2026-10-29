@@ -17,6 +17,8 @@ def test_grevil_variant_requires_electronic_shifting():
 
     # Once electronic shifting is explicitly verified, size is recognized.
     item['description'] += ' SRAM Rival AXS'
+    assert rejection_reason(item, profile) == 'hsa_unverified'
+    item['hsa_verified'] = True
     assert rejection_reason(item, profile) is None
     points, signals = score(item, profile)
     assert points > 0

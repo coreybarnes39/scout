@@ -1,10 +1,10 @@
-# Scout — reusable product-monitoring engine
+# Scout â€” reusable product-monitoring engine
 
 Runs in GitHub Actions, scores products with YAML rules, and tracks matches in a Google Sheet. No paid AI API required. Python 3.12.
 
 ## Current state
 
-The code, tests, Google Sheets integration, RSS and Shopify catalog collectors, deduplication, and optional SMTP alerts are implemented. **No retailer is preconfigured**: `profiles/cycling.yaml` has `sources: []`. This is intentional: live retailer endpoints and permission to fetch them must be verified. Until a source is added, runs produce zero matches. Scores are based on product text and may miss features; 52–54 cm or M is not a guaranteed fit across brands. Never treat a score as a verified specification.
+The code, tests, Google Sheets integration, RSS and Shopify catalog collectors, deduplication, and optional SMTP alerts are implemented. **No retailer is preconfigured**: `profiles/cycling.yaml` has `sources: []`. This is intentional: live retailer endpoints and permission to fetch them must be verified. Until a source is added, runs produce zero matches. Scores are based on product text and may miss features; 52â€“54 cm or M is not a guaranteed fit across brands. Never treat a score as a verified specification.
 
 ## 1. GitHub
 
@@ -105,3 +105,9 @@ heuristic, not verified manufacturer data. The Sheets writer performs one
 update per variant, so start with `max_pages: 1` and monitor Google API quotas.
 The existing Listings sheet is a latest-seen snapshot, not a transaction-level
 price history; previous_price records only the immediately preceding price.
+
+
+### HSA evidence gate
+Cycling results require freshly checked retailer evidence before scoring and again before Top 10 publication. Mike's Bikes is matched by product URL against its HSA collection (paginated public feed); OBED is matched against links in its eligible-products section; Priority requires its explicit all-bicycles policy plus a bicycle product type. A generic Truemed partnership or HSA mention is insufficient. Unknown retailers, failed requests, absent evidence, and unrecognized product types are excluded. Collection pagination is bounded to 20 pages; products beyond that bound remain unverified.
+
+Top 10 includes hsa_evidence_url and hsa_checked_at in UTC. Verified means a documented retailer pathway, conditional on personal qualification, not personal HSA approval. Fewer than ten eligible matches produces a shorter list. Existing historical Listings rows remain stored. Run `python -m pytest -q` for offline checks.
