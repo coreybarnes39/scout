@@ -122,5 +122,5 @@ def test_all_profiles_publish_once_after_collecting_every_category():
         clock.now.return_value.date.return_value = date(2026, 11, 19)
         run()
     write.assert_called_once()
-    assert len(write.call_args.args[1]) == 6
+    assert len(write.call_args.args[1]) == 8
     assert write.call_args.kwargs['replace_all'] is True
