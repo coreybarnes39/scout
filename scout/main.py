@@ -35,6 +35,7 @@ def run(profile_filter=None, dry_run=False, debug=False):
         with open('sources/gifts.yaml') as f:
             registry.update(yaml.safe_load(f) or {})
     sheet = None if dry_run else open_sheet()
+    gift_batches = []
     for path in sorted(glob.glob('profiles/*.yaml')):
         with open(path) as f: profile = yaml.safe_load(f)
         if not profile.get('enabled') or (profile_filter and profile['name'] != profile_filter): continue
@@ -57,7 +58,7 @@ def run(profile_filter=None, dry_run=False, debug=False):
                 for item in qualified + pending:
                     print(f"[GIFT] {item['title']} | {item.get('price')} | {item.get('review_reason', '')} | {item['url']}")
             if not dry_run:
-                write_gifts(sheet, profile, qualified, pending)
+                gift_batches.append((profile, qualified, pending))
             continue
         found, reasons = {}, Counter()
         review, health = [], []
@@ -142,6 +143,9 @@ def run(profile_filter=None, dry_run=False, debug=False):
                                          deduplicate=results_config.get('deduplicate_models', True))
             print(f"[SCOUT] Updated Top 10 tab: {len(selected)} distinct bikes")
         send_email([a for a in alerts if a['score'] >= threshold])
+
+    if gift_batches and not dry_run:
+        write_gifts(sheet, gift_batches, replace_all=not bool(profile_filter))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

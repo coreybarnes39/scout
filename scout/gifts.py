@@ -114,21 +114,71 @@ def collect_gifts(source):
         yield item
 
 
-def write_gifts(sheet, profile, listings, review):
-    """Gift columns instead of cycling drivetrain/HSA fields; no emails."""
-    headers = ['gift', 'recipient', 'price_USD', 'why', 'checks_before_buying',
-               'retailer', 'link', 'checked_at', 'review_reason']
-    for prefix, items in [('Gift shortlist ', listings), ('Gift review ', review)]:
-        title = (prefix + profile['name'])[:100]
-        doc = sheet.spreadsheet
-        import gspread
+GIFT_CATEGORIES = {
+    'dad_lego': 'Star Wars LEGO',
+    'dad_classic_rock': 'Classic rock',
+    'mom_aerogarden': 'AeroGarden & indoor gardening',
+    'parents_plants': 'Plant accessories',
+    'parents_food': 'Food subscriptions',
+    'parents_experiences': 'Experiences & tickets',
+}
+GIFT_HEADERS = ['Category', 'Gift', 'For', 'Status', 'Price (USD)',
+                'Why it fits', 'Checks before buying', 'Retailer', 'Link',
+                'Last checked', 'Review reason']
+
+
+def write_gifts(sheet, batches, replace_all=True):
+    """Publish one consolidated tab per parent after collecting every category.
+
+    Shared ideas appear in both tabs. Partial runs replace only their categories.
+    Empty output never creates a sheet; existing output is cleared to remove stale rows.
+    """
+    import gspread
+    doc = sheet.spreadsheet
+    incoming = {'Mom': [], 'Dad': []}
+    categories = {'Mom': set(), 'Dad': set()}
+    for profile, listings, review in batches:
+        recipient = profile['recipient']
+        targets = ['Mom', 'Dad'] if recipient == 'Shared' else [recipient]
+        category = GIFT_CATEGORIES.get(profile['name'], profile['name'].replace('_', ' ').title())
+        for target in targets:
+            categories[target].add(category)
+            for status, items in [('Price/stock checked', listings), ('Needs review', review)]:
+                incoming[target].extend([[category, item['title'],
+                    'Both parents' if recipient == 'Shared' else recipient, status,
+                    item.get('price') if item.get('price') is not None else 'Unverified',
+                    item.get('why', ''), item.get('checks', ''), item['source'],
+                    item['url'], item.get('checked_at', ''), item.get('review_reason', '')]
+                    for item in items])
+    wrote_output = False
+    for parent in ['Mom', 'Dad']:
+        if not categories[parent]:
+            continue
+        title = f'{parent} Christmas gifts'
         try:
             tab = doc.worksheet(title)
         except gspread.WorksheetNotFound:
-            tab = doc.add_worksheet(title=title, rows=100, cols=len(headers))
-        rows = [headers] + [[i['title'], profile['recipient'],
-                i.get('price') if i.get('price') is not None else 'Unverified',
-                i.get('why', ''), i.get('checks', ''), i['source'], i['url'],
-                i.get('checked_at', ''), i.get('review_reason', '')] for i in items]
+            if not incoming[parent]:
+                continue
+            tab = doc.add_worksheet(title=title, rows=max(100, len(incoming[parent]) + 1),
+                                    cols=len(GIFT_HEADERS))
+        else:
+            if not replace_all:
+                old = tab.get_all_records()
+                # Keep other categories during a single-profile run.
+                incoming[parent] = [[row.get(h, '') for h in GIFT_HEADERS]
+                    for row in old if row.get('Category') not in categories[parent]] + incoming[parent]
+        rows = sorted(incoming[parent], key=lambda row: (row[0], row[3] != 'Price/stock checked', row[1]))
+        tab.resize(rows=max(100, len(rows) + 1), cols=len(GIFT_HEADERS))
         tab.clear()
-        tab.update(range_name=f'A1:I{len(rows)}', values=rows, value_input_option='RAW')
+        tab.update(range_name=f'A1:K{len(rows) + 1}', values=[GIFT_HEADERS] + rows,
+                   value_input_option='RAW')
+        wrote_output = True
+    # Retain earlier generated data but hide obsolete category/review tabs.
+    # Only do this after a consolidated tab has been successfully written.
+    if wrote_output:
+        legacy = {prefix + profile['name'] for prefix in ['Gift shortlist ', 'Gift review ']
+                  for profile, _, _ in batches}
+        for tab in doc.worksheets():
+            if tab.title in legacy:
+                tab.hide()
