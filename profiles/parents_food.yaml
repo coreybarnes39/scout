@@ -15,5 +15,16 @@
   },
   "alerts": {
     "enabled": false
+  },
+  "delivery_zip": "32258",
+  "preferences": {
+    "focus": "prepaid seasonal produce",
+    "exclude": [
+      "snack boxes",
+      "candy subscriptions",
+      "cheese and charcuterie clubs"
+    ],
+    "require_fixed_term": true,
+    "require_full_prepaid_cost": true
   }
 }
