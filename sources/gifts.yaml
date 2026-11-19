@@ -1,0 +1,145 @@
+{
+  "gift_lego": {
+    "name": "LEGO US",
+    "products": [
+      {
+        "title": "Star Wars helmets and busts",
+        "url": "https://www.lego.com/en-us/themes/star-wars/helmets-busts",
+        "why": "Dad collects Star Wars head/helmet display builds and makes his own shelves in his woodshop.",
+        "checks": "Confirm owned set numbers before choosing a new helmet or bust; no Botanicals, shelving or generic stands. Budget $150 including final costs.",
+        "review_reason": "Select a Star Wars set he does not already own and verify price and Christmas delivery.",
+        "priority": 1
+      }
+    ]
+  },
+  "gift_aerogarden": {
+    "name": "AeroGarden / ScottsMiracle-Gro",
+    "products": [
+      {
+        "title": "Grow Anything Seed Pod Kit",
+        "url": "https://scottsmiraclegro.com/en-us/brands/aerogarden/products/seed-kits/aerogarden-grow-anything-seed-pod-kit.html",
+        "why": "Lets mom try new seed varieties in her existing gardens, rather than buying another unit.",
+        "checks": "Choose pod count; seeds are separate; check plant height against garden model.",
+        "priority": 1
+      },
+      {
+        "title": "AeroGarden Seed Kits",
+        "url": "https://scottsmiraclegro.com/en-us/brands/aerogarden/products/seed-kits/",
+        "why": "Herbs, miniature tomatoes, peppers or flowers; collection for further discovery.",
+        "checks": "Pick a specific kit and variant before ranking.",
+        "review_reason": "Collection page: select a specific kit and confirm model compatibility."
+      }
+    ]
+  },
+  "gift_plants": {
+    "name": "The Sill",
+    "products": [
+      {
+        "title": "Adjustable Plant Stand",
+        "url": "https://www.thesill.com/products/adjustable-plant-stand",
+        "why": "Upgrades the display of plants they already own.",
+        "checks": "Check pot diameter and weight; shipping/tax and delivery not included.",
+        "priority": 1
+      },
+      {
+        "title": "Self Watering Plant Globes",
+        "url": "https://www.thesill.com/products/self-watering-plant-globes",
+        "why": "Useful indoor potted-plant accessory, especially while travelling.",
+        "checks": "For soil-grown plants, not AeroGarden reservoirs; confirm suitability for their plants.",
+        "priority": 2
+      },
+      {
+        "title": "Moisture Meter",
+        "url": "https://www.thesill.com/products/soil-moisture-meter",
+        "why": "Small practical add-on for their soil-grown houseplants.",
+        "checks": "Soil use only; does not measure AeroGarden nutrient solution. Check whether they already own one.",
+        "priority": 3
+      }
+    ]
+  },
+  "gift_food": {
+    "name": "Food gift research",
+    "products": [
+      {
+        "title": "Universal Yums prepaid gift subscription",
+        "url": "https://www.universalyums.com/gift",
+        "why": "A different country’s snacks each month; repeats the surprise-delivery idea they enjoyed.",
+        "subscription": true,
+        "checks": "Choose 1/3/6/12 months; confirm full prepaid total including shipping, dietary needs and start date. Official FAQ says gifts do not auto-renew.",
+        "review_reason": "Select box size and full prepaid term; verify total price, allergies and delivery.",
+        "priority": 1
+      },
+      {
+        "title": "iGourmet cheese or charcuterie subscription",
+        "url": "https://igourmet.com/pages/subscription-boxes",
+        "why": "Unusual recurring food delivery; consider a shorter prepaid term within budget.",
+        "subscription": true,
+        "checks": "Confirm 3/6/12-month full total, shipping, renewal terms, refrigeration and dietary preferences.",
+        "review_reason": "Full gift-term cost and renewal terms not verified.",
+        "priority": 2
+      }
+    ]
+  },
+  "gift_rock": {
+    "name": "Official classic-rock stores",
+    "products": [
+      {
+        "title": "Led Zeppelin official merchandise and music",
+        "url": "https://store.ledzeppelin.com/",
+        "why": "Dad likes Led Zeppelin; consider an illustrated book, official print or music edition.",
+        "checks": "Confirm existing collection; vinyl only if he has a turntable; verify format, size, full cost and delivery.",
+        "review_reason": "Select a specific gift and verify price; merchandise collection is not an offer.",
+        "priority": 1
+      },
+      {
+        "title": "Rolling Stones official store",
+        "url": "https://therollingstones.lnk.to/OfficialStore",
+        "why": "Dad likes the Rolling Stones; official art/books/music may complement his display interests.",
+        "checks": "Confirm existing collection and preferred format; no assumption that he plays vinyl.",
+        "review_reason": "Choose a US-store product and verify total price and delivery.",
+        "priority": 2
+      }
+    ]
+  },
+  "gift_experiences": {
+    "name": "Official event and team sources",
+    "products": [
+      {
+        "title": "Get The Led Out — March 20, 2027, 8 p.m. — Florida Theatre",
+        "url": "https://www.floridatheatre.com/events/detail/get-the-led-out-4",
+        "why": "Shared night out in Jacksonville with a Led Zeppelin tribute band. This is not Led Zeppelin itself.",
+        "checks": "Two adjacent seats, total fees, parking, availability, transfer rules and whether mom would enjoy it. Shared outing budget $300 total.",
+        "event_date": "2027-03-20",
+        "location": "Jacksonville, FL",
+        "party_size": 2,
+        "review_reason": "Event/date verified on venue page; two-seat all-in price has not been verified.",
+        "priority": 1,
+        "experience": true
+      },
+      {
+        "title": "Jacksonville Jaguars — 2027 Orlando home-game tickets",
+        "url": "https://www.jaguars.com/orlando2027",
+        "why": "A shared Jaguars outing at Camping World Stadium in Orlando during the 2027 season.",
+        "checks": "Full 2027 schedule and pricing not set as of 2026-11-19; deposits are not tickets or total prices. Include two adjacent seats, fees, parking and travel in $300 combined budget.",
+        "event_year": 2027,
+        "location": "Orlando, FL",
+        "party_size": 2,
+        "review_reason": "Watchlist only: 2027 schedule, exact game, ticket pair price and travel remain unverified.",
+        "priority": 2,
+        "experience": true
+      },
+      {
+        "title": "Jacksonville Jaguars — 2026 Jacksonville home-game tickets",
+        "url": "https://www.jaguars.com/tickets/singlegametickets",
+        "why": "Alternative shared Jaguars outing in Jacksonville.",
+        "checks": "Choose a future game they can attend; show exact date and whether it occurs before Christmas. Verify venue, two adjacent seats, fees, parking and total price.",
+        "event_year": 2026,
+        "location": "Jacksonville, FL",
+        "party_size": 2,
+        "review_reason": "Select a future home game and verify two-ticket total; do not rank a single-seat headline price.",
+        "priority": 3,
+        "experience": true
+      }
+    ]
+  }
+}

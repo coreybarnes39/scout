@@ -1,0 +1,19 @@
+{
+  "name": "dad_lego",
+  "enabled": true,
+  "category": "gifts",
+  "recipient": "Dad",
+  "ends_on": "2026-12-25",
+  "sources": [
+    "gift_lego"
+  ],
+  "filters": {
+    "max_price": 150
+  },
+  "results": {
+    "top_n": 10
+  },
+  "alerts": {
+    "enabled": false
+  }
+}

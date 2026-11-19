@@ -1,0 +1,19 @@
+{
+  "name": "mom_aerogarden",
+  "enabled": true,
+  "category": "gifts",
+  "recipient": "Mom",
+  "ends_on": "2026-12-25",
+  "sources": [
+    "gift_aerogarden"
+  ],
+  "filters": {
+    "max_price": 150
+  },
+  "results": {
+    "top_n": 10
+  },
+  "alerts": {
+    "enabled": false
+  }
+}

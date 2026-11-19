@@ -1,0 +1,19 @@
+{
+  "name": "parents_experiences",
+  "enabled": true,
+  "category": "gifts",
+  "recipient": "Shared",
+  "ends_on": "2026-12-25",
+  "sources": [
+    "gift_experiences"
+  ],
+  "filters": {
+    "max_price": 300
+  },
+  "results": {
+    "top_n": 10
+  },
+  "alerts": {
+    "enabled": false
+  }
+}

@@ -1,5 +1,5 @@
 name: cycling
-enabled: true
+enabled: false
 category: cycling
 sources: [contender, obed, mikes, bikesonline, lauf, priority, trek, specialized, jenson, competitive_cyclist, orbea, buycycle]
 filters:
