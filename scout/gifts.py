@@ -85,7 +85,7 @@ def collect_gifts(source):
         item['review_reason'] = item.get('review_reason', 'Price/stock needs verification')
         # Gift subscriptions require full term, renewal and delivery checks;
         # never treat a monthly headline or a configurable plan as a total.
-        if item.get('subscription') or candidate.get('review_reason'):
+        if item.get('subscription') or item.get('experience') or candidate.get('review_reason'):
             yield item
             continue
         try:

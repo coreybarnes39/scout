@@ -36,6 +36,28 @@ def test_subscription_never_uses_monthly_headline_as_full_cost():
     assert item['price'] is None and not item['available']
 
 
+def test_experience_never_uses_single_seat_or_deposit_price():
+    source = {'name': 'Venue', 'products': [{
+        'title': 'Show for two', 'url': 'https://example.test/tickets',
+        'experience': True, 'party_size': 2}]}
+    with patch('scout.gifts.requests.get') as get:
+        item, = collect_gifts(source)
+    get.assert_not_called()
+    assert item['price'] is None and not item['available']
+
+
+def test_updated_recipient_preferences():
+    sources = yaml.safe_load(Path('sources/gifts.yaml').read_text())
+    lego = sources['gift_lego']['products']
+    assert all('Star Wars' in item['title'] for item in lego)
+    assert all('botanical' not in item['title'].lower() for item in lego)
+    events = sources['gift_experiences']['products']
+    assert all(item['party_size'] == 2 and item['review_reason'] for item in events)
+    assert any(item.get('event_year') == 2027 and item['location'] == 'Orlando, FL' for item in events)
+    p = yaml.safe_load(Path('profiles/parents_experiences.yaml').read_text())
+    assert p['filters']['max_price'] == 300
+
+
 def test_denied_robots_is_reviewed_not_silently_dropped():
     response = Mock(text='User-agent: *\nDisallow: /')
     source = {'name': 'Shop', 'products': [{'title': 'Tiny Plants',
