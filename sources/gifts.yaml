@@ -58,25 +58,38 @@
     ]
   },
   "gift_food": {
-    "name": "Food gift research",
+    "name": "Seasonal produce gift research",
     "products": [
       {
-        "title": "Universal Yums prepaid gift subscription",
-        "url": "https://www.universalyums.com/gift",
-        "why": "A different country’s snacks each month; repeats the surprise-delivery idea they enjoyed.",
+        "title": "Local Fare Jax seasonal produce — fixed-term gift inquiry",
+        "url": "https://localfarejax.com/how-it-works/",
+        "why": "Local mixed seasonal produce for both parents; the provider explicitly lists delivery to 32258.",
         "subscription": true,
-        "checks": "Choose 1/3/6/12 months; confirm full prepaid total including shipping, dietary needs and start date. Official FAQ says gifts do not auto-renew.",
-        "review_reason": "Select box size and full prepaid term; verify total price, allergies and delivery.",
+        "delivery_zip": "32258",
+        "coverage_evidence_url": "https://localfarejax.com/faqs/",
+        "checks": "Reviewed 2026-11-19: Basic $31 per bag, Standard $36; no delivery fees published. Four bags would be $124/$144 at those rates, but this is only arithmetic, not a prepaid offer. Confirm a fixed prepaid gift term, automatic stop, exact address, first 2027 delivery and full total before purchase.",
+        "review_reason": "ZIP coverage confirmed; prepaid gift availability, fixed delivery count and automatic stop are not verified.",
         "priority": 1
       },
       {
-        "title": "iGourmet cheese or charcuterie subscription",
-        "url": "https://igourmet.com/pages/subscription-boxes",
-        "why": "Unusual recurring food delivery; consider a shorter prepaid term within budget.",
+        "title": "Hale Groves All Seasons Fruit Club — 3-month gift",
+        "url": "https://www.halegroves.com/3-month-all-seasons-fruit-club/p/g103/",
+        "why": "Three monthly deliveries of seasonally selected fresh fruit, as a fixed-term shared gift.",
         "subscription": true,
-        "checks": "Confirm 3/6/12-month full total, shipping, renewal terms, refrigeration and dietary preferences.",
-        "review_reason": "Full gift-term cost and renewal terms not verified.",
+        "delivery_zip": "32258",
+        "checks": "Reviewed 2026-11-19: published 3-month price $134.99; club listing advertises free shipping. Confirm final total/tax, exact address acceptance, chosen 2027 start month, no ongoing renewal and fruit-only selections/substitutions. This is seasonal fruit, not a mixed-vegetable CSA.",
+        "review_reason": "Published term price found; selected start month, exact-address delivery and final prepaid/renewal terms need confirmation.",
         "priority": 2
+      },
+      {
+        "title": "Boyett’s Grove Tropical Fruit Club — choose 3 months",
+        "url": "https://boyettsgrove.com/gift-fruit-shipping/tropical-fruit-club",
+        "why": "Seasonal Florida citrus delivered in three selected months; an alternative prepaid produce gift.",
+        "subscription": true,
+        "delivery_zip": "32258",
+        "checks": "Reviewed 2026-11-19: published 3-month price $134.82 delivered, subject to current confirmation. Order by phone; verify exact address, selected 2027 months, full prepaid price and that shipments end after the chosen term. Approximately half a bushel per delivery may be too much for two; check grapefruit preference and smaller/substitution options.",
+        "review_reason": "Published delivered term price found; phone confirmation of availability, quantity and fixed prepaid gift terms needed.",
+        "priority": 3
       }
     ]
   },
