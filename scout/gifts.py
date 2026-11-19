@@ -113,6 +113,10 @@ def collect_gifts(source):
             item['review_reason'] = str(exc)
         yield item
 
+    if source.get('discovery_pages'):
+        from .gift_discovery import discover_experiences
+        yield from discover_experiences(source, [p['url'] for p in source.get('products', [])])
+
 
 GIFT_CATEGORIES = {
     'dad_lego': 'Star Wars LEGO',
@@ -141,7 +145,7 @@ def write_gifts(sheet, batches, replace_all=True):
         recipient = profile['recipient']
         targets = ['Joint' if recipient == 'Shared' else 'Individual']
         recipient_label = 'Both parents' if recipient == 'Shared' else recipient
-        category = GIFT_CATEGORIES.get(profile['name'], profile['name'].replace('_', ' ').title())
+        category = profile.get('category_label') or GIFT_CATEGORIES.get(profile['name'], profile['name'].replace('_', ' ').title())
         for target in targets:
             categories[target].add((category, recipient_label))
             for status, items in [('Price/stock checked', listings), ('Needs review', review)]:

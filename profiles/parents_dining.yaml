@@ -1,0 +1,20 @@
+{
+  "name": "parents_dining",
+  "enabled": true,
+  "category": "gifts",
+  "category_label": "Dining experiences",
+  "recipient": "Shared",
+  "ends_on": "2026-12-25",
+  "sources": [
+    "gift_dining"
+  ],
+  "filters": {
+    "max_price": 300
+  },
+  "results": {
+    "top_n": 10
+  },
+  "alerts": {
+    "enabled": false
+  }
+}

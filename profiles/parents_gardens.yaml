@@ -1,0 +1,20 @@
+{
+  "name": "parents_gardens",
+  "enabled": true,
+  "category": "gifts",
+  "category_label": "Gardens & workshops",
+  "recipient": "Shared",
+  "ends_on": "2026-12-25",
+  "sources": [
+    "gift_gardens"
+  ],
+  "filters": {
+    "max_price": 300
+  },
+  "results": {
+    "top_n": 10
+  },
+  "alerts": {
+    "enabled": false
+  }
+}

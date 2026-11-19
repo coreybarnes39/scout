@@ -31,9 +31,10 @@ def run(profile_filter=None, dry_run=False, debug=False):
     logging.basicConfig(level=logging.INFO if debug else logging.WARNING, format='[SCOUT] %(message)s')
     with open('sources/retailers.yaml') as f:
         registry = yaml.safe_load(f) or {}
-    if os.path.exists('sources/gifts.yaml'):
-        with open('sources/gifts.yaml') as f:
-            registry.update(yaml.safe_load(f) or {})
+    for registry_path in ['sources/gifts.yaml', 'sources/experiences.yaml']:
+        if os.path.exists(registry_path):
+            with open(registry_path) as f:
+                registry.update(yaml.safe_load(f) or {})
     sheet = None if dry_run else open_sheet()
     gift_batches = []
     for path in sorted(glob.glob('profiles/*.yaml')):

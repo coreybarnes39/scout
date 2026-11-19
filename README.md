@@ -2,7 +2,7 @@
 
 Current focus: Christmas gifts for parents, up to $150 per parent, including separate and shared gifts. See [CHRISTMAS_2026.md](CHRISTMAS_2026.md) for the categories, starter sources, budget rules and remaining preferences.
 
-Cycling is disabled. Six gift profiles reuse the existing daily GitHub Action and Google Sheet, with just Individual Christmas gifts and Joint Christmas gifts tabs and no gift emails. The initial curated watchlists contain fourteen leads. This is a bounded monitor, not an automatic search of the entire internet. Merge and run Scout Daily to populate the gift tabs; no credentials need changing. Profiles stop after December 25, 2026 (America/New_York).
+Cycling is disabled. Eight gift profiles reuse the existing daily GitHub Action and Google Sheet, with just Individual Christmas gifts and Joint Christmas gifts tabs and no gift emails. The initial curated watchlists contain fourteen leads. This is a bounded monitor, not an automatic search of the entire internet. Merge and run Scout Daily to populate the gift tabs; no credentials need changing. Profiles stop after December 25, 2026 (America/New_York).
 
 Initial live dry run on November 19 (before the preference update): two The Sill products supplied exact USD prices and InStock structured data (watering globes $20; soil moisture meter $19). Seven other leads remain in review, including LEGO pages that returned HTTP 403, a configurable plant stand, an AeroGarden kit, a seed-kit collection and two subscription leads. No Sheets writes or emails were performed. Prices exclude shipping/tax; Christmas delivery is unverified. Subsequent runs fetch current data and may differ.
 
@@ -140,3 +140,14 @@ Unknown cycling signals are stored as `Unverified` in Listings rather than false
 
 
 Individual gifts for Mom and Dad share **Individual Christmas gifts**, with the **For** column identifying the recipient. Shared produce subscriptions, plant accessories and experiences appear once in **Joint Christmas gifts**. Category and Status remain on both views. A full run hides the earlier Mom Christmas gifts and Dad Christmas gifts tabs without deleting their data; use a blank profile for this migration. Partial runs preserve other recipients and categories and do not hide those earlier parent views.
+
+
+## Dining and garden discovery
+
+The joint view now includes **Dining experiences** (parents_dining) and **Gardens & workshops** (parents_gardens), each using the $300 total-for-two budget. They load from sources/experiences.yaml. Seed dining leads are Congaree and Penn/The Roost, JAX Cooking Studio, Asado Life, The Tasting Tours and Brine. Garden leads are the Garden Club of Jacksonville bonsai workshop on February 2, 2027, St. Johns Botanical Garden, Leu Gardens gift memberships and Jacksonville Zoo and Botanical Gardens gift memberships. They appear once in Joint Christmas gifts as Needs review; quoted unit prices and gift-card amounts are not complete outings.
+
+For additional ideas, the dining source checks JAX Cooking Studio's official public class calendar starting December 26, 2026. Discovery is configurable through discovery_pages entries on a source: HTTPS URL (optional {today}/{start} placeholders), not_before date, same-origin URL pattern, include_any/exclude_any title filters, and max_details. At most three index pages and six detail requests per index are attempted, yielding at most twelve new leads per source. Requests respect robots.txt and timeouts and do not bypass blocked pages. Only a dated, non-cancelled structured Event from the configured start (at least today) through December 31, 2027 can become a new lead; seeded URLs and repeated calendar links are not repeated. Private/kids/camp classes are excluded by this calendar's configuration.
+
+New calendar discoveries always require review of availability, location, two-person full cost, dietary needs and gift terms. Pages without supported Event data, unavailable calendars and blocked pages produce no automatic additions, with failures logged. This is bounded discovery from selected official sources, not a search of the entire internet. Add more public calendars in sources/experiences.yaml to broaden coverage. Seeded memberships and evergreen dining leads remain useful when calendars cannot be read.
+
+Run Scout Daily with profile blank for all eight categories, or parents_dining / parents_gardens to refresh one. Leave dry_run unchecked to update Sheets. Gift scans still end after Christmas Day 2026, while listed experiences may take place in 2027. No new credentials are required.

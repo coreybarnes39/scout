@@ -1,0 +1,123 @@
+{
+  "gift_dining": {
+    "name": "Official dining and cooking experience sources",
+    "products": [
+      {
+        "title": "Congaree and Penn \u2014 farm visit and dinner at The Roost",
+        "url": "https://www.congareeandpenn.com/roost-menu",
+        "why": "Seasonal produce and dining on a working farm combine their plant and food interests.",
+        "checks": "Regular dining and farm exploration are separate; farm passes cost extra. Gift cards cover regular dining/agritourism, not ticketed dinners. Reservations open 30 days ahead; verify total within $300.",
+        "experience": true,
+        "party_size": 2,
+        "review_reason": "Confirm a 2027 date, availability, gift redemption and full cost for two including tax, fees, tip and travel."
+      },
+      {
+        "title": "JAX Cooking Studio \u2014 cooking date night / Chef\u2019s Kitchen for Two",
+        "url": "https://jaxcookingstudio.com/product/gift-certificates/",
+        "why": "Cook a meal together, then eat it; select a class and two-person option they would enjoy.",
+        "checks": "Gift certificates are available. Select an actual class/2027 date; ticket ranges may mix one-person and two-person options. Check dietary needs, availability, full cost and certificate terms.",
+        "experience": true,
+        "party_size": 2,
+        "review_reason": "Confirm a 2027 date, availability, gift redemption and full cost for two including tax, fees, tip and travel."
+      },
+      {
+        "title": "Asado Life \u2014 waterfront live-fire dining",
+        "url": "https://www.asadolife.com/",
+        "why": "Argentinian-inspired live-fire grilling at a waterfront restaurant.",
+        "checks": "Choose Jacksonville or St. Augustine location; confirm current menu, reservation, gift card terms and full dinner-for-two cost.",
+        "experience": true,
+        "party_size": 2,
+        "review_reason": "Confirm a 2027 date, availability, gift redemption and full cost for two including tax, fees, tip and travel."
+      },
+      {
+        "title": "The Tasting Tours \u2014 St. Augustine progressive food tour",
+        "url": "https://www.thetastingtours.com/st-augustine-food-tours.html",
+        "why": "Try several restaurants and paired tastings during a shared outing.",
+        "checks": "Choose walking/food tour and 2027 date. Guide tip and parking are additional. The published $155-per-person chauffeured version exceeds $300 for two before tip; do not treat it as within budget.",
+        "experience": true,
+        "party_size": 2,
+        "review_reason": "Confirm a 2027 date, availability, gift redemption and full cost for two including tax, fees, tip and travel."
+      },
+      {
+        "title": "Brine \u2014 tasting menu or collaborative chef dinner",
+        "url": "https://www.brinejax.com/visit",
+        "why": "Intimate Jacksonville dining with a multi-course tasting menu and occasional collaboration dinners.",
+        "checks": "Confirm menu, current price, 2027 date, seating and dietary accommodations. Collaboration dates and prices are not assumed from regular dinner service.",
+        "experience": true,
+        "party_size": 2,
+        "review_reason": "Confirm a 2027 date, availability, gift redemption and full cost for two including tax, fees, tip and travel."
+      }
+    ],
+    "discovery_pages": [
+      {
+        "name": "JAX Cooking Studio official calendar",
+        "url": "https://jaxcookingstudio.com/classes/?tribe-bar-date={start}",
+        "url_pattern": "/class/",
+        "include_any": [
+          "dinner",
+          "steak",
+          "pasta",
+          "sushi",
+          "cooking",
+          "brunch",
+          "chef",
+          "napa",
+          "sicily",
+          "ramen",
+          "tasting"
+        ],
+        "exclude_any": [
+          "private",
+          "kids",
+          "children",
+          "camp",
+          "teen"
+        ],
+        "max_details": 6,
+        "not_before": "2026-12-26"
+      }
+    ]
+  },
+  "gift_gardens": {
+    "name": "Official garden and horticulture sources",
+    "products": [
+      {
+        "title": "Garden Club of Jacksonville \u2014 beginner bonsai \u2014 February 2, 2027",
+        "url": "https://gardenclubjax.networkforgood.com/events/102849-horticulture-corner-the-art-of-bonsai-for-beginners",
+        "why": "A hands-on plant experience for both parents, with supplies to take home.",
+        "checks": "Published 2027-02-02, 6\u20138 p.m.; $55 per nonmember at review on 2026-11-19. Verify two places, full fees and cancellation/gift terms before purchase.",
+        "experience": true,
+        "party_size": 2,
+        "review_reason": "Confirm a 2027 date, availability, gift redemption and full cost for two including tax, fees, tip and travel.",
+        "event_date": "2027-02-02"
+      },
+      {
+        "title": "St. Johns Botanical Garden \u2014 garden day and lunch",
+        "url": "https://www.stjohnsbotanicalgarden.org/admission-fees-without-membership/",
+        "why": "A garden visit with lunch and an optional plant-buying allowance.",
+        "checks": "Published general adult admission $15 each at review; senior rates may apply. Confirm opening day, gift ticket terms, lunch/travel costs. Group tours have minimum sizes; do not assume a private tour for two.",
+        "experience": true,
+        "party_size": 2,
+        "review_reason": "Confirm a 2027 date, availability, gift redemption and full cost for two including tax, fees, tip and travel."
+      },
+      {
+        "title": "Leu Gardens \u2014 gift membership for 2027 visits",
+        "url": "https://www.leugardens.org/Support/Membership",
+        "why": "A garden membership they could use during Orlando trips.",
+        "checks": "Select a tier covering both adults. Verify current full price, activation date and reciprocal privileges; special events may cost extra.",
+        "experience": true,
+        "party_size": 2,
+        "review_reason": "Confirm a 2027 date, availability, gift redemption and full cost for two including tax, fees, tip and travel."
+      },
+      {
+        "title": "Jacksonville Zoo and Botanical Gardens \u2014 gift membership",
+        "url": "https://www.jacksonvillezoo.org/membership",
+        "why": "Repeated local visits to gardens, with animals and adult programs as options.",
+        "checks": "Confirm current membership tier for two adults, gift activation and price. After-hours events and some attractions cost extra.",
+        "experience": true,
+        "party_size": 2,
+        "review_reason": "Confirm a 2027 date, availability, gift redemption and full cost for two including tax, fees, tip and travel."
+      }
+    ]
+  }
+}
