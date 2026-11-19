@@ -5,6 +5,10 @@ import glob
 import os
 import smtplib
 import time
+from datetime import date
+from zoneinfo import ZoneInfo
+from datetime import datetime
+from .gifts import collect_gifts, write_gifts
 from email.message import EmailMessage
 import yaml
 from .connectors import collect
@@ -27,10 +31,34 @@ def run(profile_filter=None, dry_run=False, debug=False):
     logging.basicConfig(level=logging.INFO if debug else logging.WARNING, format='[SCOUT] %(message)s')
     with open('sources/retailers.yaml') as f:
         registry = yaml.safe_load(f) or {}
+    if os.path.exists('sources/gifts.yaml'):
+        with open('sources/gifts.yaml') as f:
+            registry.update(yaml.safe_load(f) or {})
     sheet = None if dry_run else open_sheet()
     for path in sorted(glob.glob('profiles/*.yaml')):
         with open(path) as f: profile = yaml.safe_load(f)
         if not profile.get('enabled') or (profile_filter and profile['name'] != profile_filter): continue
+        if profile.get('ends_on') and datetime.now(ZoneInfo('America/New_York')).date() > date.fromisoformat(str(profile['ends_on'])):
+            continue
+        if profile.get('category') == 'gifts':
+            qualified, pending = [], []
+            for source_id in profile.get('sources', []):
+                for item in collect_gifts(registry[source_id]):
+                    if item.get('price') is None or not item.get('available') or item.get('review_reason'):
+                        pending.append(item)
+                    elif item['price'] > profile['filters']['max_price']:
+                        pending.append(item | {'review_reason': 'Over gift budget'})
+                    else:
+                        qualified.append(item)
+            qualified.sort(key=lambda i: (i.get('priority', 99), i['price']))
+            qualified = qualified[:profile.get('results', {}).get('top_n', 10)]
+            print(f"{profile['name']}: {len(qualified)} price/stock checked, {len(pending)} need review")
+            if debug or dry_run:
+                for item in qualified + pending:
+                    print(f"[GIFT] {item['title']} | {item.get('price')} | {item.get('review_reason', '')} | {item['url']}")
+            if not dry_run:
+                write_gifts(sheet, profile, qualified, pending)
+            continue
         found, reasons = {}, Counter()
         review, health = [], []
         review_by_source = {}

@@ -1,3 +1,13 @@
+# Scout: Christmas gift research (2026)
+
+Current focus: Christmas gifts for parents, up to $150 per parent, including separate and shared gifts. See [CHRISTMAS_2026.md](CHRISTMAS_2026.md) for the categories, starter sources, budget rules and remaining preferences.
+
+Cycling is disabled. Four gift profiles reuse the existing daily GitHub Action and Google Sheet, with separate shortlist and review tabs and no gift emails. The initial curated watchlists contain nine leads. This is a bounded monitor, not an automatic search of the entire internet. Merge and run Scout Daily to populate the gift tabs; no credentials need changing. Profiles stop after December 25, 2026 (America/New_York).
+
+Live dry run on November 19: two The Sill products supplied exact USD prices and InStock structured data (watering globes $20; soil moisture meter $19). Seven other leads remain in review, including LEGO pages that returned HTTP 403, a configurable plant stand, an AeroGarden kit, a seed-kit collection and two subscription leads. No Sheets writes or emails were performed. Prices exclude shipping/tax; Christmas delivery is unverified. Subsequent runs fetch current data and may differ.
+
+## Existing engine documentation
+
 # Scout â€” reusable product-monitoring engine
 
 Runs in GitHub Actions, scores products with YAML rules, and tracks matches in a Google Sheet. No paid AI API required. Python 3.12.

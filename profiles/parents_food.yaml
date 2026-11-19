@@ -1,0 +1,19 @@
+{
+  "name": "parents_food",
+  "enabled": true,
+  "category": "gifts",
+  "recipient": "Shared",
+  "ends_on": "2026-12-25",
+  "sources": [
+    "gift_food"
+  ],
+  "filters": {
+    "max_price": 150
+  },
+  "results": {
+    "top_n": 10
+  },
+  "alerts": {
+    "enabled": false
+  }
+}

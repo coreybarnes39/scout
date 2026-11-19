@@ -1,0 +1,89 @@
+{
+  "gift_lego": {
+    "name": "LEGO US",
+    "products": [
+      {
+        "title": "Tiny Plants",
+        "url": "https://www.lego.com/en-us/product/tiny-plants-10329",
+        "why": "Adult building project that overlaps dad\u2019s LEGO interest and both parents\u2019 plant interest.",
+        "checks": "Ask which LEGO sets dad already owns; confirm Christmas delivery and final shipping/tax.",
+        "priority": 1
+      },
+      {
+        "title": "Bonsai Tree",
+        "url": "https://www.lego.com/en-us/product/bonsai-tree-10281",
+        "why": "Displayable plant-themed building project for dad.",
+        "checks": "Check ownership, stock and Christmas delivery.",
+        "priority": 2
+      }
+    ]
+  },
+  "gift_aerogarden": {
+    "name": "AeroGarden / ScottsMiracle-Gro",
+    "products": [
+      {
+        "title": "Grow Anything Seed Pod Kit",
+        "url": "https://scottsmiraclegro.com/en-us/brands/aerogarden/products/seed-kits/aerogarden-grow-anything-seed-pod-kit.html",
+        "why": "Lets mom try new seed varieties in her existing gardens, rather than buying another unit.",
+        "checks": "Choose pod count; seeds are separate; check plant height against garden model.",
+        "priority": 1
+      },
+      {
+        "title": "AeroGarden Seed Kits",
+        "url": "https://scottsmiraclegro.com/en-us/brands/aerogarden/products/seed-kits/",
+        "why": "Herbs, miniature tomatoes, peppers or flowers; collection for further discovery.",
+        "checks": "Pick a specific kit and variant before ranking.",
+        "review_reason": "Collection page: select a specific kit and confirm model compatibility."
+      }
+    ]
+  },
+  "gift_plants": {
+    "name": "The Sill",
+    "products": [
+      {
+        "title": "Adjustable Plant Stand",
+        "url": "https://www.thesill.com/products/adjustable-plant-stand",
+        "why": "Upgrades the display of plants they already own.",
+        "checks": "Check pot diameter and weight; shipping/tax and delivery not included.",
+        "priority": 1
+      },
+      {
+        "title": "Self Watering Plant Globes",
+        "url": "https://www.thesill.com/products/self-watering-plant-globes",
+        "why": "Useful indoor potted-plant accessory, especially while travelling.",
+        "checks": "For soil-grown plants, not AeroGarden reservoirs; confirm suitability for their plants.",
+        "priority": 2
+      },
+      {
+        "title": "Moisture Meter",
+        "url": "https://www.thesill.com/products/soil-moisture-meter",
+        "why": "Small practical add-on for their soil-grown houseplants.",
+        "checks": "Soil use only; does not measure AeroGarden nutrient solution. Check whether they already own one.",
+        "priority": 3
+      }
+    ]
+  },
+  "gift_food": {
+    "name": "Food gift research",
+    "products": [
+      {
+        "title": "Universal Yums prepaid gift subscription",
+        "url": "https://www.universalyums.com/gift",
+        "why": "A different country\u2019s snacks each month; repeats the surprise-delivery idea they enjoyed.",
+        "subscription": true,
+        "checks": "Choose 1/3/6/12 months; confirm full prepaid total including shipping, dietary needs and start date. Official FAQ says gifts do not auto-renew.",
+        "review_reason": "Select box size and full prepaid term; verify total price, allergies and delivery.",
+        "priority": 1
+      },
+      {
+        "title": "iGourmet cheese or charcuterie subscription",
+        "url": "https://igourmet.com/pages/subscription-boxes",
+        "why": "Unusual recurring food delivery; consider a shorter prepaid term within budget.",
+        "subscription": true,
+        "checks": "Confirm 3/6/12-month full total, shipping, renewal terms, refrigeration and dietary preferences.",
+        "review_reason": "Full gift-term cost and renewal terms not verified.",
+        "priority": 2
+      }
+    ]
+  }
+}
