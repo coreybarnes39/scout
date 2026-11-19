@@ -2,7 +2,7 @@
 
 Current focus: Christmas gifts for parents, up to $150 per parent, including separate and shared gifts. See [CHRISTMAS_2026.md](CHRISTMAS_2026.md) for the categories, starter sources, budget rules and remaining preferences.
 
-Cycling is disabled. Six gift profiles reuse the existing daily GitHub Action and Google Sheet, with just Mom Christmas gifts and Dad Christmas gifts tabs and no gift emails. The initial curated watchlists contain fourteen leads. This is a bounded monitor, not an automatic search of the entire internet. Merge and run Scout Daily to populate the gift tabs; no credentials need changing. Profiles stop after December 25, 2026 (America/New_York).
+Cycling is disabled. Six gift profiles reuse the existing daily GitHub Action and Google Sheet, with just Individual Christmas gifts and Joint Christmas gifts tabs and no gift emails. The initial curated watchlists contain fourteen leads. This is a bounded monitor, not an automatic search of the entire internet. Merge and run Scout Daily to populate the gift tabs; no credentials need changing. Profiles stop after December 25, 2026 (America/New_York).
 
 Initial live dry run on November 19 (before the preference update): two The Sill products supplied exact USD prices and InStock structured data (watering globes $20; soil moisture meter $19). Seven other leads remain in review, including LEGO pages that returned HTTP 403, a configurable plant stand, an AeroGarden kit, a seed-kit collection and two subscription leads. No Sheets writes or emails were performed. Prices exclude shipping/tax; Christmas delivery is unverified. Subsequent runs fetch current data and may differ.
 
@@ -12,7 +12,7 @@ Produce preference update: shared food gifts now focus on prepaid seasonal produ
 
 ## Gift results
 
-Open **Mom Christmas gifts** or **Dad Christmas gifts** in the existing Google Sheet. Each row includes category, gift, recipient (including Both parents), status, price, why it fits, checks before buying, retailer, link, last check and review reason. Shared gifts appear in both tabs. Price/stock checked items and Needs review leads share the same view.
+Open **Individual Christmas gifts** or **Joint Christmas gifts** in the existing Google Sheet. Each row includes category, gift, recipient (including Both parents), status, price, why it fits, checks before buying, retailer, link, last check and review reason. Shared gifts appear once in the joint tab. Price/stock checked items and Needs review leads share the same view.
 
 No new parent tab is created if it has no rows. An existing tab is cleared to its header when a full run finds no rows, removing stale results. Running one profile refreshes only its category and preserves the other categories. After a successful consolidated write, the processed profiles' older Gift shortlist / Gift review tabs are hidden, not deleted. Other sheets stay as they are.
 
@@ -137,3 +137,6 @@ Top 10 includes hsa_evidence_url and hsa_checked_at in UTC. Verified means a doc
 Mount scoring includes reviewed Trek specifications for Checkpoint SL 5 Gen 3 (including AXS) and SL 6 AXS Gen 3. These dated manufacturer snapshots fill missing retailer descriptions and award the full 15-point mounts criterion. The Top 10 evidence JSON includes the manufacturer URL, review date and basis. They do not verify stock, size, drivetrain or HSA eligibility. Other generations, SLR, Checkpoint+, ambiguous titles and explicitly custom builds do not inherit these records. Listed mounting hardware and load limits still depend on the exact size and equipment.
 
 Unknown cycling signals are stored as `Unverified` in Listings rather than false; unknown signals do not enter the Top 10 ranking explanation. Existing historical rows change when a listing is next processed.
+
+
+Individual gifts for Mom and Dad share **Individual Christmas gifts**, with the **For** column identifying the recipient. Shared produce subscriptions, plant accessories and experiences appear once in **Joint Christmas gifts**. Category and Status remain on both views. A full run hides the earlier Mom Christmas gifts and Dad Christmas gifts tabs without deleting their data; use a blank profile for this migration. Partial runs preserve other recipients and categories and do not hide those earlier parent views.

@@ -128,30 +128,31 @@ GIFT_HEADERS = ['Category', 'Gift', 'For', 'Status', 'Price (USD)',
 
 
 def write_gifts(sheet, batches, replace_all=True):
-    """Publish one consolidated tab per parent after collecting every category.
+    """Publish separate individual and joint gift tabs after collecting categories.
 
-    Shared ideas appear in both tabs. Partial runs replace only their categories.
+    Shared ideas appear once in the joint tab. Partial runs preserve other recipients/categories.
     Empty output never creates a sheet; existing output is cleared to remove stale rows.
     """
     import gspread
     doc = sheet.spreadsheet
-    incoming = {'Mom': [], 'Dad': []}
-    categories = {'Mom': set(), 'Dad': set()}
+    incoming = {'Individual': [], 'Joint': []}
+    categories = {'Individual': set(), 'Joint': set()}
     for profile, listings, review in batches:
         recipient = profile['recipient']
-        targets = ['Mom', 'Dad'] if recipient == 'Shared' else [recipient]
+        targets = ['Joint' if recipient == 'Shared' else 'Individual']
+        recipient_label = 'Both parents' if recipient == 'Shared' else recipient
         category = GIFT_CATEGORIES.get(profile['name'], profile['name'].replace('_', ' ').title())
         for target in targets:
-            categories[target].add(category)
+            categories[target].add((category, recipient_label))
             for status, items in [('Price/stock checked', listings), ('Needs review', review)]:
                 incoming[target].extend([[category, item['title'],
-                    'Both parents' if recipient == 'Shared' else recipient, status,
+                    recipient_label, status,
                     item.get('price') if item.get('price') is not None else 'Unverified',
                     item.get('why', ''), item.get('checks', ''), item['source'],
                     item['url'], item.get('checked_at', ''), item.get('review_reason', '')]
                     for item in items])
     wrote_output = False
-    for parent in ['Mom', 'Dad']:
+    for parent in ['Individual', 'Joint']:
         if not categories[parent]:
             continue
         title = f'{parent} Christmas gifts'
@@ -167,8 +168,8 @@ def write_gifts(sheet, batches, replace_all=True):
                 old = tab.get_all_records()
                 # Keep other categories during a single-profile run.
                 incoming[parent] = [[row.get(h, '') for h in GIFT_HEADERS]
-                    for row in old if row.get('Category') not in categories[parent]] + incoming[parent]
-        rows = sorted(incoming[parent], key=lambda row: (row[0], row[3] != 'Price/stock checked', row[1]))
+                    for row in old if (row.get('Category'), row.get('For')) not in categories[parent]] + incoming[parent]
+        rows = sorted(incoming[parent], key=lambda row: (row[2], row[0], row[3] != 'Price/stock checked', row[1]))
         tab.resize(rows=max(100, len(rows) + 1), cols=len(GIFT_HEADERS))
         tab.clear()
         tab.update(range_name=f'A1:K{len(rows) + 1}', values=[GIFT_HEADERS] + rows,
@@ -179,6 +180,8 @@ def write_gifts(sheet, batches, replace_all=True):
     if wrote_output:
         legacy = {prefix + profile['name'] for prefix in ['Gift shortlist ', 'Gift review ']
                   for profile, _, _ in batches}
+        if replace_all:
+            legacy.update({'Mom Christmas gifts', 'Dad Christmas gifts'})
         for tab in doc.worksheets():
             if tab.title in legacy:
                 tab.hide()

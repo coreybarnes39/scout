@@ -6,7 +6,7 @@ from scout.gifts import write_gifts, GIFT_HEADERS
 def setup_sheet(exists=True):
     sheet = Mock()
     doc = sheet.spreadsheet
-    tabs = {parent: Mock() for parent in ['Mom Christmas gifts', 'Dad Christmas gifts']}
+    tabs = {parent: Mock() for parent in ['Individual Christmas gifts', 'Joint Christmas gifts']}
     if exists:
         doc.worksheet.side_effect = tabs.__getitem__
     else:
@@ -33,21 +33,23 @@ def test_categories_combine_instead_of_overwriting_each_other():
     sheet, tabs = setup_sheet()
     write_gifts(sheet, [(profile(), [item('Helmet')], []),
                        (profile('dad_classic_rock'), [], [item('Rock book', None)])])
-    data = rows(tabs['Dad Christmas gifts'])
+    data = rows(tabs['Individual Christmas gifts'])
     assert len(data) == 3
     assert {r[0] for r in data[1:]} == {'Star Wars LEGO', 'Classic rock'}
     assert {r[3] for r in data[1:]} == {'Price/stock checked', 'Needs review'}
-    tabs['Dad Christmas gifts'].clear.assert_called_once()
-    tabs['Mom Christmas gifts'].update.assert_not_called()
+    tabs['Individual Christmas gifts'].clear.assert_called_once()
+    tabs['Joint Christmas gifts'].update.assert_not_called()
 
 
-def test_shared_ideas_appear_in_both_parent_tabs():
+def test_shared_ideas_appear_once_in_joint_tab():
     sheet, tabs = setup_sheet()
     write_gifts(sheet, [(profile('parents_experiences', 'Shared'), [], [item('Concert', None)])])
-    for tab in tabs.values():
-        assert rows(tab)[1][0] == 'Experiences & tickets'
-        assert rows(tab)[1][2] == 'Both parents'
-        assert rows(tab)[1][4] == 'Unverified'
+    tab = tabs['Joint Christmas gifts']
+    assert len(rows(tab)) == 2
+    assert rows(tab)[1][0] == 'Experiences & tickets'
+    assert rows(tab)[1][2] == 'Both parents'
+    assert rows(tab)[1][4] == 'Unverified'
+    tabs['Individual Christmas gifts'].update.assert_not_called()
 
 
 def test_empty_results_do_not_create_tabs():
@@ -60,24 +62,24 @@ def test_empty_results_do_not_create_tabs():
 def test_empty_existing_tab_clears_stale_results():
     sheet, tabs = setup_sheet()
     write_gifts(sheet, [(profile(), [], [])])
-    assert rows(tabs['Dad Christmas gifts']) == [GIFT_HEADERS]
-    tabs['Dad Christmas gifts'].clear.assert_called_once()
+    assert rows(tabs['Individual Christmas gifts']) == [GIFT_HEADERS]
+    tabs['Individual Christmas gifts'].clear.assert_called_once()
 
 
 def test_first_results_create_only_the_target_parent_tab():
     sheet, tabs = setup_sheet(exists=False)
     write_gifts(sheet, [(profile(), [item()], [])])
     assert sheet.spreadsheet.add_worksheet.call_count == 1
-    assert sheet.spreadsheet.add_worksheet.call_args.kwargs['title'] == 'Dad Christmas gifts'
-    assert len(rows(tabs['Dad Christmas gifts'])) == 2
+    assert sheet.spreadsheet.add_worksheet.call_args.kwargs['title'] == 'Individual Christmas gifts'
+    assert len(rows(tabs['Individual Christmas gifts'])) == 2
 
 
 def test_single_profile_run_keeps_other_categories():
     sheet, tabs = setup_sheet()
-    dad = tabs['Dad Christmas gifts']
+    dad = tabs['Individual Christmas gifts']
     dad.get_all_records.return_value = [
-        {'Category': 'Classic rock', 'Gift': 'Existing music'},
-        {'Category': 'Star Wars LEGO', 'Gift': 'Old helmet'},
+        {'Category': 'Classic rock', 'Gift': 'Existing music', 'For': 'Dad'},
+        {'Category': 'Star Wars LEGO', 'Gift': 'Old helmet', 'For': 'Dad'},
     ]
     write_gifts(sheet, [(profile(), [item('New helmet')], [])], replace_all=False)
     assert {r[1] for r in rows(dad)[1:]} == {'Existing music', 'New helmet'}
@@ -93,3 +95,44 @@ def test_legacy_managed_tabs_hidden_only_for_processed_profiles():
     legacy.hide.assert_called_once()
     other.hide.assert_not_called()
     custom.hide.assert_not_called()
+
+
+def test_individual_tab_combines_mom_and_dad_with_recipient_labels():
+    sheet, tabs = setup_sheet()
+    write_gifts(sheet, [(profile(), [item('Helmet')], []),
+                       (profile('mom_aerogarden', 'Mom'), [item('Seed kit')], [])])
+    data = rows(tabs['Individual Christmas gifts'])
+    assert {(r[1], r[2]) for r in data[1:]} == {('Helmet', 'Dad'), ('Seed kit', 'Mom')}
+    tabs['Joint Christmas gifts'].update.assert_not_called()
+
+
+def test_partial_update_preserves_other_recipient_in_same_category():
+    sheet, tabs = setup_sheet()
+    tab = tabs['Individual Christmas gifts']
+    tab.get_all_records.return_value = [
+        {'Category': 'Star Wars LEGO', 'Gift': 'Mom idea', 'For': 'Mom'},
+        {'Category': 'Star Wars LEGO', 'Gift': 'Old dad idea', 'For': 'Dad'},
+    ]
+    write_gifts(sheet, [(profile(), [item('New dad idea')], [])], replace_all=False)
+    assert {r[1] for r in rows(tab)[1:]} == {'Mom idea', 'New dad idea'}
+
+
+def test_full_run_hides_previous_parent_tabs_but_keeps_custom_sheets():
+    sheet, _ = setup_sheet()
+    mom, dad, custom = [Mock(title=t) for t in
+                        ['Mom Christmas gifts', 'Dad Christmas gifts', 'My notes']]
+    sheet.spreadsheet.worksheets.return_value = [mom, dad, custom]
+    write_gifts(sheet, [(profile(), [item()], []),
+                       (profile('parents_plants', 'Shared'), [], [item('Stand', None)])])
+    mom.hide.assert_called_once()
+    dad.hide.assert_called_once()
+    custom.hide.assert_not_called()
+
+
+def test_partial_run_does_not_hide_previous_parent_tabs():
+    sheet, tabs = setup_sheet()
+    tabs['Individual Christmas gifts'].get_all_records.return_value = []
+    mom = Mock(title='Mom Christmas gifts')
+    sheet.spreadsheet.worksheets.return_value = [mom]
+    write_gifts(sheet, [(profile(), [item()], [])], replace_all=False)
+    mom.hide.assert_not_called()
