@@ -78,14 +78,6 @@ def test_gift_profiles_and_budget_are_connected():
     assert not yaml.safe_load(Path('profiles/cycling.yaml').read_text())['enabled']
 
 
-def test_gift_tabs_have_no_bike_fields_and_clear_old_rows():
-    sheet = Mock()
-    write_gifts(sheet, {'name': 'dad_lego', 'recipient': 'Dad'}, [], [])
-    tab = sheet.spreadsheet.worksheet.return_value
-    assert tab.clear.call_count == 2
-    headers = tab.update.call_args.kwargs['values'][0]
-    assert 'recipient' in headers and 'hsa_status' not in headers
-
 
 def test_gift_run_separates_budget_unknown_and_qualified_without_email():
     from datetime import date
@@ -101,8 +93,10 @@ def test_gift_run_separates_budget_unknown_and_qualified_without_email():
         clock.now.return_value.date.return_value = date(2026, 11, 19)
         run('dad_lego')
     args = write.call_args.args
-    assert [item['price'] for item in args[2]] == [100]
-    assert len(args[3]) == 2
+    profile, qualified, pending = args[1][0]
+    assert [item['price'] for item in qualified] == [100]
+    assert len(pending) == 2
+    assert write.call_args.kwargs['replace_all'] is False
     email.assert_not_called()
 
 
@@ -117,3 +111,16 @@ def test_dry_run_does_not_open_or_write_sheet():
         run('dad_lego', dry_run=True)
     sheet.assert_not_called()
     write.assert_not_called()
+
+
+def test_all_profiles_publish_once_after_collecting_every_category():
+    from datetime import date
+    from scout.main import run
+    with patch('scout.main.collect_gifts', side_effect=lambda _: iter([])), \
+            patch('scout.main.datetime') as clock, \
+            patch('scout.main.open_sheet'), patch('scout.main.write_gifts') as write:
+        clock.now.return_value.date.return_value = date(2026, 11, 19)
+        run()
+    write.assert_called_once()
+    assert len(write.call_args.args[1]) == 6
+    assert write.call_args.kwargs['replace_all'] is True

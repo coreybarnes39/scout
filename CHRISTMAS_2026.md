@@ -28,14 +28,18 @@ Budget: up to $150 per parent, counting the entire prepaid subscription cost. Se
 
 ## How the research runs
 
-Cycling is disabled; its code and history remain available. Six enabled profiles populate `Gift shortlist <profile>` and `Gift review <profile>` in the existing Google Sheet. No new credentials are needed. Use GitHub Actions > Scout Daily > Run workflow, with an optional profile such as `dad_lego`; dry_run prints results without Sheets writes. Existing daily scheduling applies, and these profiles stop after Christmas Day in America/New_York.
+Cycling is disabled; its code and history remain available. Six enabled profiles feed just `Mom Christmas gifts` and `Dad Christmas gifts` in the existing Google Sheet. Category and Status columns distinguish interests and price-checked versus Needs review rows; shared ideas appear in both tabs. No new credentials are needed. Use GitHub Actions > Scout Daily > Run workflow, with an optional profile such as `dad_lego`; dry_run prints results without Sheets writes. Existing daily scheduling applies, and these profiles stop after Christmas Day in America/New_York.
 
-The initial watchlists contain thirteen curated leads, not an exhaustive internet search. They can grow in sources/gifts.yaml. Each physical product is fetched from its public page subject to robots.txt. Only an exact-name JSON-LD Product with one USD Offer and explicit InStock availability receives a current price. Missing structured data, blocked pages, configurable offers and food plans go to review, so a shortlist can be empty even when a website sells an item. There are no invented prices or stale-price fallbacks. `checked_at` records the attempt time, not a successful verification for review rows.
+The initial watchlists contain thirteen curated leads, not an exhaustive internet search. They can grow in sources/gifts.yaml. Each physical product is fetched from its public page subject to robots.txt. Only an exact-name JSON-LD Product with one USD Offer and explicit InStock availability receives a current price. Missing structured data, blocked pages, configurable offers and food plans appear as Needs review in the parent tabs, so the price-checked subset can be empty even when a website sells an item. There are no invented prices or stale-price fallbacks. `checked_at` records the attempt time, not a successful verification for review rows.
 
-Shortlist means price and stock checked, not purchase-ready: recipient ZIP, Christmas arrival, final shipping/tax, ownership, compatibility and dietary restrictions still need checking. Subscription leads remain in review until a concrete prepaid plan and full cost are independently verified; monthly price is never ranked. Gift emails are not sent. Historical cycling sheets may still show old entries; gift results are in their separate tabs.
+Shortlist means price and stock checked, not purchase-ready: recipient ZIP, Christmas arrival, final shipping/tax, ownership, compatibility and dietary restrictions still need checking. Subscription leads remain in review until a concrete prepaid plan and full cost are independently verified; monthly price is never ranked. Gift emails are not sent. Historical cycling sheets may still show old entries; gift results are in the two parent tabs.
 
 ## Preferences still needed
 
 Dad's owned Star Wars set numbers, turntable ownership and music collection; mom's AeroGarden model names; parents' delivery ZIP, food likes/dislikes, allergies, and which previous food subscription they enjoyed. Do not infer that an unknown dietary requirement is safe.
 
 The 2027 event horizon does not extend daily gift scans past Christmas 2026. Event leads stay in review until dates, two-seat all-in costs and practical constraints are checked. No ticket or deposit purchases are made.
+
+## Consolidated tab behavior
+
+Results are accumulated for every selected gift category before publishing once. An empty parent result never creates a new tab; existing tabs have stale results cleared on a full refresh. Profile-specific refreshes replace only that category, keeping other categories. Previously generated per-category shortlist/review tabs are hidden for processed profiles after a successful consolidated write; data is retained and unrelated tabs are untouched.
